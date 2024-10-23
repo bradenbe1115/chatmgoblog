@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-class WebScraper:
+class MGoBlogWebScraper:
 
     def _get_web_page(self, url: str) -> str:
         """

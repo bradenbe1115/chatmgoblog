@@ -1,8 +1,8 @@
-from common.web_scraper import WebScraper
+from common.web_scraper import MGoBlogWebScraper
 import pytest
 
 def test_valid_url():
-    ws = WebScraper()
+    ws = MGoBlogWebScraper()
 
     valid_url = "https://www.mgoblog.com/"
 
@@ -11,7 +11,7 @@ def test_valid_url():
     assert len(result) > 0
 
 def test_invalid_url_fails():
-    ws = WebScraper()
+    ws = MGoBlogWebScraper()
 
     invalid_url = "https://www.espn.com/junk"
     
