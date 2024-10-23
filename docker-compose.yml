@@ -1,0 +1,8 @@
+services:
+  test_mgoblog_data:
+    build:
+      dockerfile: ./src/mgoblog_data/tests/Dockerfile
+    ports:
+      - "9000:8080"
+    profiles:
+      - test_mgoblog_data
