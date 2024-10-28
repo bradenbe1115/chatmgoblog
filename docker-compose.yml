@@ -6,3 +6,11 @@ services:
       - "9000:8080"
     profiles:
       - test_mgoblog_data
+
+  landing_db:
+    build:
+      dockerfile: ./src/pipeline_framework/landing_db/Dockerfile
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    env_file:
+      - .env
