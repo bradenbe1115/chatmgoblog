@@ -1,5 +1,4 @@
-from common.web_scraper import MGoBlogWebScraper
-import pytest
+from ingest_mgoblog_data.common.web_scraper import MGoBlogWebScraper
 
 def test_valid_url():
     ws = MGoBlogWebScraper()

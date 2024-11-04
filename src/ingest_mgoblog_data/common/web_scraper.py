@@ -1,7 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
+from ingest_mgoblog_data.common.models import MgoblogContentLandingDataSchema
 
 class MGoBlogWebScraper:
+    site_root = "https://www.mgoblog.com"
 
     def _get_web_page(self, url: str) -> str:
         """
@@ -135,7 +137,7 @@ class MGoBlogWebScraper:
 
         return {"tags": tags, "title": title, "author": author, "body": body}
     
-    def get_content(self, start_url: str, max_iteration: int=5, iteration: int=0, results: list[dict]=[]) -> list[dict]:
+    def get_content(self, start_url: str, max_iteration: int=5, iteration: int=0, results: list[dict]=None) -> list[MgoblogContentLandingDataSchema]:
         """
             Finds links to content on Mgoblog page, gets content data from links, and recursively iterates process to next page.
 
@@ -144,6 +146,9 @@ class MGoBlogWebScraper:
                 max_iterations (int): Max number of pages to look for content on
                 iteration (int): Number of pages iterated through
         """
+
+        if results is None:
+            results = []
 
         if iteration == max_iteration:
             return results
@@ -154,13 +159,11 @@ class MGoBlogWebScraper:
 
         # Iterate through content pages one by one and retrieve data
         for content_link in content_links:
-            page_content = self._get_web_page(url=content_link)
+            full_content_url = f"{self.site_root}{content_link}"
+            page_content = self._get_web_page(url=full_content_url)
 
             if len(page_content) > 0:
-                retr_data = self._get_page_content(page_content=page_content)
-
-                if len(retr_data) > 0:
-                    results.append(retr_data)
+                results.append(MgoblogContentLandingDataSchema(url=full_content_url, raw_html=page_content))
         
         more_content_link = self._get_more_content_link(page_content=start_page_content)
 
@@ -168,7 +171,7 @@ class MGoBlogWebScraper:
             return results
         
         else:
-            return self.get_content(start_url=more_content_link, max_iteration=max_iteration, iteration=iteration+1, results=results)
+            return self.get_content(start_url=f"{self.site_root}{more_content_link}", max_iteration=max_iteration, iteration=iteration+1, results=results)
         
 
 

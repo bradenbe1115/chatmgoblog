@@ -1,16 +1,40 @@
+networks:
+  shared:
+    driver: bridge
+
 services:
   test_mgoblog_data:
     build:
-      dockerfile: ./src/mgoblog_data/tests/Dockerfile
+      dockerfile: tests.Dockerfile
+    depends_on:
+      - landing_db
     ports:
       - "9000:8080"
     profiles:
       - test_mgoblog_data
+    networks:
+      - shared
 
   landing_db:
     build:
       dockerfile: ./src/pipeline_framework/landing_db/Dockerfile
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - 27017:27017
     env_file:
       - .env
+    volumes:
+      - ./src/pipeline_framework/landing_db/data:/data/db
+    networks:
+      - shared
+
+  get_mgoblog_data:
+    build:
+      dockerfile: ./src/mgoblog_data/get_mgoblog_data/Dockerfile
+    depends_on:
+      - landing_db
+    ports:
+      - "9000:8080"
+    profiles:
+      - get_mgoblog_data
+    networks:
+      - shared

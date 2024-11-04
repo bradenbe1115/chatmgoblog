@@ -6,7 +6,7 @@ ENV MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME}
 ENV MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD}
 
 # Expose the default MongoDB port
-EXPOSE ${APP_PORT}
+EXPOSE 27017
 
 # The default command to run MongoDB
 CMD ["mongod"]
