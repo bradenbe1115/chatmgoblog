@@ -1,7 +1,7 @@
-from common.web_scraper import MGoBlogWebScraper
-from common.repository import PyMongoMgoBlogContentRepository 
+from ingest_mgoblog_data.common.web_scraper import MGoBlogWebScraper
+from ingest_mgoblog_data.common.repository import PyMongoMgoBlogContentRepository 
 
-DB_URI = "landing_db"
+DB_URI = "elt_db"
 DB_NAME = "landing"
 COLLECTION_NAME = "mgoblog_content"
 

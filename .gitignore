@@ -162,4 +162,4 @@ cython_debug/
 #.idea/
 
 # Document db files
-src/pipeline_framework/landing_db/data/
+src/pipeline_framework/elt_db/data/

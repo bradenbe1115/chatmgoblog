@@ -7,7 +7,7 @@ services:
     build:
       dockerfile: tests.Dockerfile
     depends_on:
-      - landing_db
+      - elt_db
     ports:
       - "9000:8080"
     profiles:
@@ -15,26 +15,26 @@ services:
     networks:
       - shared
 
-  landing_db:
+  elt_db:
     build:
-      dockerfile: ./src/pipeline_framework/landing_db/Dockerfile
+      dockerfile: ./src/pipeline_framework/elt_db/Dockerfile
     ports:
       - 27017:27017
     env_file:
       - .env
     volumes:
-      - ./src/pipeline_framework/landing_db/data:/data/db
+      - ./src/pipeline_framework/elt_db/data:/data/db
     networks:
       - shared
 
-  get_mgoblog_data:
+  scrape_mgoblog_data:
     build:
-      dockerfile: ./src/mgoblog_data/get_mgoblog_data/Dockerfile
+      dockerfile: ./src/ingest_mgoblog_data/scrape_mgoblog_data/Dockerfile
     depends_on:
-      - landing_db
+      - elt_db
     ports:
       - "9000:8080"
     profiles:
-      - get_mgoblog_data
+      - scrape_mgoblog_data
     networks:
       - shared

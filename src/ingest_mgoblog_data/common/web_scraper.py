@@ -1,6 +1,8 @@
 import requests
+import time
 from bs4 import BeautifulSoup
 from ingest_mgoblog_data.common.models import MgoblogContentLandingDataSchema
+
 
 class MGoBlogWebScraper:
     site_root = "https://www.mgoblog.com"
@@ -163,7 +165,7 @@ class MGoBlogWebScraper:
             page_content = self._get_web_page(url=full_content_url)
 
             if len(page_content) > 0:
-                results.append(MgoblogContentLandingDataSchema(url=full_content_url, raw_html=page_content))
+                results.append(MgoblogContentLandingDataSchema(url=full_content_url, raw_html=page_content, collected_ts=int(time.time())))
         
         more_content_link = self._get_more_content_link(page_content=start_page_content)
 
