@@ -71,16 +71,9 @@ class MGoBlogWebScraper:
                 str: link to more content. Will return None if no such link is found
         """
         soup = BeautifulSoup(page_content, 'html.parser')
-        more_content_dict = soup.find("div", class_="more-link")
         next_page_li = soup.find("li", class_="pager__item--next")
 
-        if more_content_dict is None and next_page_li is None:
-            return None
-
-        if more_content_dict is None:
-            anchor_tag = next_page_li.find("a")
-        else:
-            anchor_tag = more_content_dict.find("a")
+        anchor_tag = next_page_li.find("a")
 
         if anchor_tag is not None:
             return anchor_tag["href"]
@@ -155,25 +148,24 @@ class MGoBlogWebScraper:
         if iteration == max_iteration:
             return results
         
-        start_page_content = self._get_web_page(url=start_url)
+        start_page_content = self._get_web_page(url=f"{start_url}?page={iteration+1}")
+
+        if len(start_page_content) == 0:
+            return results
 
         content_links = self.get_content_links(page_content=start_page_content)
 
         # Iterate through content pages one by one and retrieve data
         for content_link in content_links:
             full_content_url = f"{self.site_root}{content_link}"
+            print(full_content_url)
             page_content = self._get_web_page(url=full_content_url)
 
             if len(page_content) > 0:
                 results.append(MgoblogContentLandingDataSchema(url=full_content_url, raw_html=page_content, collected_ts=int(time.time())))
         
-        more_content_link = self._get_more_content_link(page_content=start_page_content)
-
-        if more_content_link is None:
-            return results
-        
         else:
-            return self.get_content(start_url=f"{self.site_root}{more_content_link}", max_iteration=max_iteration, iteration=iteration+1, results=results)
+            return self.get_content(start_url=start_url, max_iteration=max_iteration, iteration=iteration+1, results=results)
         
 
 

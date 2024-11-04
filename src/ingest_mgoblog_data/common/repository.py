@@ -54,9 +54,10 @@ class PyMongoMgoBlogContentRepository(AbstractMgoBlogContentRepository):
         operations = [pymongo.UpdateOne({'url': x.url},  {"$set": x.__dict__}, upsert=True) for x in data]
 
 
-        self.client[self.database_name][
+        result = self.client[self.database_name][
             self.raw_mgoblog_content_collection_name
         ].bulk_write(operations)
+        print(result)
 
     def _get_raw_mgoblog_content(self, url) -> Union[dict, None]:
         return self.client[self.database_name][self.raw_mgoblog_content_collection_name].find_one({'url': url})

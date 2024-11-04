@@ -8,9 +8,9 @@ COLLECTION_NAME = "mgoblog_content"
 def main():
 
     ws = MGoBlogWebScraper()
-    start_url = "https://www.mgoblog.com/"
+    start_url = "https://www.mgoblog.com/additional-stories"
 
-    results = ws.get_content(start_url=start_url, max_iteration=1)
+    results = ws.get_content(start_url=start_url,max_iteration=50)
     print(f"{len(results)} pages scraped starting at {start_url}")
 
     repo = PyMongoMgoBlogContentRepository(db_uri=DB_URI, database_name=DB_NAME, raw_mgoblog_content_collection_name=COLLECTION_NAME)
