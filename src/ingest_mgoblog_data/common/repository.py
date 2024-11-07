@@ -73,7 +73,7 @@ class PyMongoMgoBlogContentRepository(AbstractMgoBlogContentRepository):
     
     def _add_processed_mgoblog_content(self, data):
         
-        operations = [pymongo.UpdateOne({'url': x.url},  {"$set": x.__dict__}, upsert=True) for x in data]
+        operations = [pymongo.UpdateOne({'url': x['url']},  {"$set": x}, upsert=True) for x in data]
 
         result = self.client[self.processed_database_name][
             self.mgoblog_content_collection_name
