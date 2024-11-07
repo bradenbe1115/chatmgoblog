@@ -34,16 +34,25 @@ class AbstractMgoBlogContentRepository(abc.ABC):
     @abc.abstractmethod
     def _get_raw_mgoblog_content(self, url: str) -> Union[dict, None]:
         raise NotImplementedError
+    
+    def add_processed_mgoblog_content(self, data: list[dict]):
+        self._add_processed_mgoblog_content(data=data)
+
+    @abc.abstractmethod
+    def _add_processed_mgoblog_content(self, data: list[dict]):
+        raise NotImplementedError
+    
 
 class PyMongoMgoBlogContentRepository(AbstractMgoBlogContentRepository):
 
     def __init__(
-        self, db_uri: str, database_name: str, raw_mgoblog_content_collection_name: str, port: int=27017
+        self, db_uri: str, landing_database_name: str, mgoblog_content_collection_name: str,processed_database_name: str=None, port: int=27017
     ):
         self.db_uri = db_uri
         self.port = port
-        self.database_name = database_name
-        self.raw_mgoblog_content_collection_name = raw_mgoblog_content_collection_name
+        self.landing_database_name = landing_database_name
+        self.processed_database_name = processed_database_name
+        self.mgoblog_content_collection_name = mgoblog_content_collection_name
 
     @property
     def client(self):
@@ -54,10 +63,20 @@ class PyMongoMgoBlogContentRepository(AbstractMgoBlogContentRepository):
         operations = [pymongo.UpdateOne({'url': x.url},  {"$set": x.__dict__}, upsert=True) for x in data]
 
 
-        result = self.client[self.database_name][
-            self.raw_mgoblog_content_collection_name
+        result = self.client[self.landing_database_name][
+            self.mgoblog_content_collection_name
         ].bulk_write(operations)
         print(result)
 
     def _get_raw_mgoblog_content(self, url) -> Union[dict, None]:
-        return self.client[self.database_name][self.raw_mgoblog_content_collection_name].find_one({'url': url})
+        return self.client[self.landing_database_name][self.mgoblog_content_collection_name].find_one({'url': url})
+    
+    def _add_processed_mgoblog_content(self, data):
+        
+        operations = [pymongo.UpdateOne({'url': x.url},  {"$set": x.__dict__}, upsert=True) for x in data]
+
+        result = self.client[self.processed_database_name][
+            self.mgoblog_content_collection_name
+        ].bulk_write(operations)
+        print(result)
+    

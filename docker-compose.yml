@@ -38,3 +38,15 @@ services:
       - scrape_mgoblog_data
     networks:
       - shared
+
+  ingest_mgoblog_data:
+    build:
+      dockerfile: ./src/ingest_mgoblog_data/Dockerfile
+    depends_on:
+      - elt_db
+    ports:
+      - "9000:8080"
+    profiles:
+      - ingest_mgoblog_data
+    networks:
+      - shared
