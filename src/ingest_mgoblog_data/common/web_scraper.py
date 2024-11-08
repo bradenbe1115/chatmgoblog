@@ -117,7 +117,7 @@ class MGoBlogWebScraper:
         # Extract author
         author_div = article.find("span", class_="field--name-uid")
         if author_div is not None:
-            author = author_div.text
+            author = author_div.text.strip()
         else:
             author = None
 
@@ -125,21 +125,21 @@ class MGoBlogWebScraper:
         author_date_div = article.find("div", class_="node__meta")
         author_date_text = author_date_div.text 
         if author is not None:
-            date_written = author_date_text.replace(author, "")
+            date_written = author_date_text.replace(author, "").strip()
         else:
-            date_written = author_date_text
+            date_written = author_date_text.strip()
 
         # Extract page title
         title_header = article.find("h1", class_="page-title")
         if title_header is not None:
-            title = title_header.text
+            title = title_header.text.strip()
         else:
             title = None
 
         # Extract page body content
         body_div = article.find("div", class_="field--name-body")
         if body_div is not None:
-            body = body_div.text
+            body = body_div.text.strip()
         else:
             body = None
 
