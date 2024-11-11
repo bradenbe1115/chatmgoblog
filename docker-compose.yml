@@ -8,6 +8,7 @@ services:
       dockerfile: tests.Dockerfile
     depends_on:
       - elt_db
+      - vector_db
     ports:
       - "9000:8080"
     env_file:
@@ -26,6 +27,17 @@ services:
       - .env
     volumes:
       - ./src/pipeline_framework/elt_db/data:/data/db
+    networks:
+      - shared
+
+  vector_db:
+    build:
+      dockerfile: ./src/pipeline_framework/vector_db/Dockerfile
+    ports:
+      - 6333:6333
+    volumes:
+      - ./src/pipeline_framework/vector_db/db_path:/db_path
+      - ./src/pipeline_frameowrk/vector_db/index_data:/chroma/.chroma/index
     networks:
       - shared
 
