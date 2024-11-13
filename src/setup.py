@@ -9,6 +9,7 @@ setup(
         'bs4',
         'pydantic',
         'pymongo',
-        "chromadb"
+        "chromadb",
+        "nltk"
     ],
 )

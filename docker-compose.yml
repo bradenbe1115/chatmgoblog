@@ -37,7 +37,7 @@ services:
       - 6333:6333
     volumes:
       - ./src/pipeline_framework/vector_db/db_path:/db_path
-      - ./src/pipeline_frameowrk/vector_db/index_data:/chroma/.chroma/index
+      - ./src/pipeline_framework/vector_db/index_data:/chroma/.chroma/index
     networks:
       - shared
 
