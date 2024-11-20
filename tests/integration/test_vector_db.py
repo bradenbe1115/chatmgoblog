@@ -5,8 +5,8 @@ def test_chromadb_vector_db():
 
     vector = ChromaVectorDB()
 
-    embedding_one = MgoBlogContentEmbedding(url="/test/url/one", embedding=[0,1])
-    embedding_two = MgoBlogContentEmbedding(url="/test/url/two", embedding=[0,0])
+    embedding_one = MgoBlogContentEmbedding(id="test_id", url="/test/url/one", embedding=[0,1])
+    embedding_two = MgoBlogContentEmbedding(id="test_id_2", url="/test/url/two", embedding=[0,0])
 
     vector.insert_embedded_mgoblog_content(embeddings=[embedding_one, embedding_two])
 

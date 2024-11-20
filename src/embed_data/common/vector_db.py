@@ -12,11 +12,11 @@ class AbstractVectorDB(abc.ABC):
     def _insert_embedded_mgoblog_content(self, embeddings: list[MgoBlogContentEmbedding]):
         raise NotImplementedError
     
-    def get_embedded_mgoblog_content(self, urls: list[str]):
+    def get_embedded_mgoblog_content(self, urls: list[str]) -> list[MgoBlogContentEmbedding]:
         return self._get_embedded_mgoblog_content(urls=urls)
     
     @abc.abstractmethod
-    def _get_embedded_mgoblog_content(self, urls: list[str]):
+    def _get_embedded_mgoblog_content(self, urls: list[str]) -> list[MgoBlogContentEmbedding]:
         raise NotImplementedError
     
 class ChromaVectorDB(AbstractVectorDB):
@@ -45,7 +45,7 @@ class ChromaVectorDB(AbstractVectorDB):
         mgoblog_content_collection = self._get_create_collection(collection_name="mgoblog_content_embeddings")
         mgoblog_content_collection.add(ids=[x.url for x in embeddings], embeddings=[x.embedding for x in embeddings])
 
-    def _get_embedded_mgoblog_content(self, urls):
+    def _get_embedded_mgoblog_content(self, urls) -> list[MgoBlogContentEmbedding]:
         mgoblog_content_collection = self._get_create_collection(collection_name="mgoblog_content_embeddings")
 
         return mgoblog_content_collection.get(ids=urls, include=['embeddings'])
