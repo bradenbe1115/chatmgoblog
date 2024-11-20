@@ -166,3 +166,4 @@ src/pipeline_framework/elt_db/data/
 
 # Vector db files
 src/pipeline_framework/vector_db/db_path/
+src/pipeline_framework/vector_db/index_data/
