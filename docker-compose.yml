@@ -3,7 +3,7 @@ networks:
     driver: bridge
 
 services:
-  test_mgoblog_data:
+  test_chatmgoblog:
     build:
       dockerfile: tests.Dockerfile
     ports:
@@ -11,7 +11,7 @@ services:
     env_file:
       - .env
     profiles:
-      - test_mgoblog_data
+      - test_chatmgoblog
 
   elt_db:
     build:
