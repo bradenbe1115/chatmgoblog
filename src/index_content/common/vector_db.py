@@ -1,7 +1,7 @@
 import abc
 import chromadb
 
-from embed_data.common.models import MgoBlogContentEmbedding
+from index_content.common.models import MgoBlogContentEmbedding
 
 class AbstractVectorDB(abc.ABC):
 
@@ -11,13 +11,7 @@ class AbstractVectorDB(abc.ABC):
     @abc.abstractmethod
     def _insert_embedded_mgoblog_content(self, embeddings: list[MgoBlogContentEmbedding]):
         raise NotImplementedError
-    
-    def get_embedded_mgoblog_content(self, urls: list[str]) -> list[MgoBlogContentEmbedding]:
-        return self._get_embedded_mgoblog_content(urls=urls)
-    
-    @abc.abstractmethod
-    def _get_embedded_mgoblog_content(self, urls: list[str]) -> list[MgoBlogContentEmbedding]:
-        raise NotImplementedError
+
     
 class ChromaVectorDB(AbstractVectorDB):
 
@@ -43,10 +37,12 @@ class ChromaVectorDB(AbstractVectorDB):
     
     def _insert_embedded_mgoblog_content(self, embeddings: list[MgoBlogContentEmbedding]):
         mgoblog_content_collection = self._get_create_collection(collection_name="mgoblog_content_embeddings")
-        mgoblog_content_collection.add(ids=[x.url for x in embeddings], embeddings=[x.embedding for x in embeddings])
+        mgoblog_content_collection.add(ids=[x.id for x in embeddings], embeddings=[x.embedding for x in embeddings])
 
-    def _get_embedded_mgoblog_content(self, urls) -> list[MgoBlogContentEmbedding]:
+    def get_embedded_mgoblog_content(self, ids: list[str]):
+        """
+            Method to retrieve content embeddings based on id list input. Main purpose of this method is to test and ensure
+            insert content is in database.
+        """
         mgoblog_content_collection = self._get_create_collection(collection_name="mgoblog_content_embeddings")
-
-        return mgoblog_content_collection.get(ids=urls, include=['embeddings'])
-        
+        mgoblog_content_collection.get(ids=ids, include=['embeddings'])

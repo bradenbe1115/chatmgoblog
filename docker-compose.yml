@@ -6,17 +6,12 @@ services:
   test_mgoblog_data:
     build:
       dockerfile: tests.Dockerfile
-    depends_on:
-      - elt_db
-      - vector_db
     ports:
       - "9000:8080"
     env_file:
       - .env
     profiles:
       - test_mgoblog_data
-    networks:
-      - shared
 
   elt_db:
     build:
@@ -62,5 +57,18 @@ services:
       - "9000:8080"
     profiles:
       - ingest_mgoblog_data
+    networks:
+      - shared
+
+  index_content:
+    build:
+      dockerfile: ./src/index_content/index_content/Dockerfile
+    depends_on:
+      - elt_db
+      - vector_db
+    ports:
+      - "9000:8080"
+    profiles:
+      - index_content
     networks:
       - shared

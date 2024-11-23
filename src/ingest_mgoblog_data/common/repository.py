@@ -31,9 +31,6 @@ class AbstractMgoBlogContentRepository(abc.ABC):
         """
         return self._get_raw_mgoblog_content(url)
     
-    def get_processed_mgoblog_content(self, url: str) -> Union[models.MgoblogContentProcessedDataSchema, None]:
-        return self._get_processed_mgoblog_content(url)
-    
     @abc.abstractmethod
     def _get_raw_mgoblog_content(self, url: str) -> Union[models.MgoblogContentLandingDataSchema, None]:
         raise NotImplementedError
@@ -43,10 +40,6 @@ class AbstractMgoBlogContentRepository(abc.ABC):
 
     @abc.abstractmethod
     def _add_processed_mgoblog_content(self, mgoblog_processed_data: list[dict]):
-        raise NotImplementedError
-    
-    @abc.abstractmethod
-    def _get_processed_mgoblog_content(self, url: str) -> Union[models.MgoblogContentProcessedDataSchema, None]:
         raise NotImplementedError
     
 

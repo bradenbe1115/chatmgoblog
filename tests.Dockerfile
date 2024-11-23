@@ -4,7 +4,7 @@ ENV PYTHONUNBUFFERED 1
 
 RUN pip install --upgrade pip
 
-# Copy over common modules and install requirements
+# Copy over modules and install requirements
 COPY src/ /src/
 RUN pip install -e /src
 

@@ -1,4 +1,4 @@
-from embed_data.common.chunker import SentenceChunker
+from chatmgoblog.embeddings.chunker import SentenceChunker
 
 def test_basic_paragraph():
     test_data = "Hello there. I'm a paragraph of text designed to test a chunker. Isn't working with LLMs fun!"
