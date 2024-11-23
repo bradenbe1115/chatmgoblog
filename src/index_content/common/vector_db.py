@@ -45,4 +45,4 @@ class ChromaVectorDB(AbstractVectorDB):
             insert content is in database.
         """
         mgoblog_content_collection = self._get_create_collection(collection_name="mgoblog_content_embeddings")
-        mgoblog_content_collection.get(ids=ids, include=['embeddings'])
+        return mgoblog_content_collection.get(ids=ids, include=['embeddings'])

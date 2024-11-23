@@ -27,6 +27,20 @@ services:
     networks:
       - shared
 
+  test_index_content:
+    build:
+      dockerfile: ./src/index_content/tests/tests.Dockerfile
+    depends_on:
+      - elt_db
+    ports:
+      - "9000:8080"
+    env_file:
+      - .env
+    profiles:
+      - test_index_content
+    networks:
+      - shared
+
   elt_db:
     build:
       dockerfile: ./src/pipeline_framework/elt_db/Dockerfile
