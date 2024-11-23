@@ -15,7 +15,7 @@ def test_mgoblog_content_repository():
 
     retr_entry = repo.get_raw_mgoblog_content(url="/url_one")
     assert retr_entry is not None
-    assert retr_entry["raw_html"] == "Hello World"
+    assert retr_entry.raw_html == "Hello World"
     assert repo.get_raw_mgoblog_content(url="/url_two") is not None
 
     new_data = [MgoblogContentLandingDataSchema(url="/url_one", raw_html="Hello World - Test Update", collected_ts=1234)]
@@ -23,4 +23,4 @@ def test_mgoblog_content_repository():
     repo.add_raw_mgoblog_content(new_data)
     retr_entry = repo.get_raw_mgoblog_content(url="/url_one")
     assert retr_entry is not None
-    assert retr_entry["raw_html"] == "Hello World - Test Update"
+    assert retr_entry.raw_html == "Hello World - Test Update"

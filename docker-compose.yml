@@ -16,12 +16,16 @@ services:
   test_ingest_mgoblog_data:
     build:
       dockerfile: ./src/ingest_mgoblog_data/tests/tests.Dockerfile
+    depends_on:
+      - elt_db
     ports:
       - "9000:8080"
     env_file:
       - .env
     profiles:
       - test_ingest_mgoblog_data
+    networks:
+      - shared
 
   elt_db:
     build:
