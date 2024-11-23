@@ -14,7 +14,7 @@ class AbstractMgoBlogContentRepository(abc.ABC):
             data (list[MgoblogContentLandingDataSchema]): list of Mgoblog raw data content
 
         """
-        self._add_raw_mgoblog_content(dmgoblog_content_landing_dataata=mgoblog_content_landing_data)
+        self._add_raw_mgoblog_content(mgoblog_content_landing_data=mgoblog_content_landing_data)
 
     @abc.abstractmethod
     def _add_raw_mgoblog_content(self, mgoblog_content_landing_data: list[models.MgoblogContentLandingDataSchema]):
