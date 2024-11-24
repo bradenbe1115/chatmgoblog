@@ -1,13 +1,7 @@
 from ingest_mgoblog_data.common.web_scraper import MGoBlogWebScraper
 from ingest_mgoblog_data.common import models
 from ingest_mgoblog_data.service_layer import unit_of_work
-from ingest_mgoblog_data.common.repository import PyMongoMgoBlogContentRepository 
-import os
 
-DB_URI = "elt_db"
-LANDING_DB_NAME = "landing"
-PROCESSED_DB_NAME = "processed"
-COLLECTION_NAME = "mgoblog_content"
 
 def scrape_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, iterations: int = 5):
 
@@ -25,18 +19,16 @@ def scrape_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, iterations: int = 
 def process_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, event: dict):
 
     ws = MGoBlogWebScraper()
-    repo = PyMongoMgoBlogContentRepository(db_uri=DB_URI, landing_database_name=LANDING_DB_NAME, mgoblog_content_collection_name=COLLECTION_NAME, processed_database_name=PROCESSED_DB_NAME)
-
     results = []
     landed_urls = event["landed_urls"]
-    for landed_url in landed_urls:
 
-        raw_data = repo.get_raw_mgoblog_content(url=landed_url)
-
-        if raw_data is not None:
-            processed_data = ws.extract_page_data(raw_data.raw_html)
-            full_data = models.MgoblogContentProcessedDataSchema(**{**processed_data, **raw_data})
-            results.append(full_data)
+    with uow:
+        raw_data = uow.content.get_raw_mgoblog_content(urls=landed_urls)
+    
+    for data in raw_data:
+        processed_data = ws.extract_page_data(data.raw_html)
+        full_data = models.MgoblogContentProcessedDataSchema(**{**processed_data, **data.__dict__})
+        results.append(full_data)
 
     if len(results) > 0:
         with uow:
