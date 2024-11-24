@@ -163,6 +163,7 @@ cython_debug/
 
 # Document db files
 src/pipeline_framework/elt_db/data/
+src/pipeline_framework/test_elt_db/data/
 
 # Vector db files
 src/pipeline_framework/vector_db/db_path/

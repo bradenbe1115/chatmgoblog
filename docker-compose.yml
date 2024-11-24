@@ -17,7 +17,7 @@ services:
     build:
       dockerfile: ./src/ingest_mgoblog_data/tests/tests.Dockerfile
     depends_on:
-      - elt_db
+      - test_elt_db
     ports:
       - "9000:8080"
     env_file:
@@ -48,8 +48,24 @@ services:
       - 27017:27017
     env_file:
       - .env
+    profiles:
+      - elt_db
     volumes:
       - ./src/pipeline_framework/elt_db/data:/data/db
+    networks:
+      - shared
+
+  test_elt_db:
+    build:
+      dockerfile: ./src/pipeline_framework/elt_db/Dockerfile
+    ports:
+      - 27017:27017
+    env_file:
+      - .env
+    profiles:
+      - test_elt_db
+    volumes:
+      - ./src/pipeline_framework/test_elt_db/data:/data/db
     networks:
       - shared
 
@@ -61,6 +77,8 @@ services:
     volumes:
       - ./src/pipeline_framework/vector_db/db_path:/db_path
       - ./src/pipeline_framework/vector_db/index_data:/chroma/.chroma/index
+    profiles:
+      - vector_db
     networks:
       - shared
 

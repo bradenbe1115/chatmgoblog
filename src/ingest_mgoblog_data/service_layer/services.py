@@ -7,8 +7,6 @@ DB_URI = "elt_db"
 LANDING_DB_NAME = "landing"
 PROCESSED_DB_NAME = "processed"
 COLLECTION_NAME = "mgoblog_content"
-HF_ACCESS_TOKEN = os.getenv("HUGGING_FACE_INFERENCE_API_ACCESS_TOKEN")
-MODEL_ENDPOINT = "models/intfloat/multilingual-e5-large-instruct"
 
 def scrape_mgoblog_data(iterations: int = 5):
 
