@@ -25,19 +25,19 @@ class AbstractMgoBlogContentRepository(abc.ABC):
     def _add_raw_mgoblog_content(self, mgoblog_content_landing_data: list[models.MgoblogContentLandingDataSchema]):
         raise NotImplementedError
     
-    def get_raw_mgoblog_content(self, url: str) -> Union[models.MgoblogContentLandingDataSchema, None]:
+    def get_raw_mgoblog_content(self, urls: list[str]) -> list[models.MgoblogContentLandingDataSchema]:
         """
-            Retrieves raw Mgoblog content from database via matching url.
+            Retrieves raw Mgoblog content from database via matching urls.
 
-            Returns None if no matching content is found.
+            Returns empty list if not matching content is found.
 
             Parameters:
-                url (str): URL of content to be searched for in database.
+                urls (list[str]): List of URLs of content to be searched for in database.
         """
-        return self._get_raw_mgoblog_content(url)
+        return self._get_raw_mgoblog_content(urls)
     
     @abc.abstractmethod
-    def _get_raw_mgoblog_content(self, url: str) -> Union[models.MgoblogContentLandingDataSchema, None]:
+    def _get_raw_mgoblog_content(self, urls: list[str]) -> list[models.MgoblogContentLandingDataSchema]:
         raise NotImplementedError
     
     def add_processed_mgoblog_content(self, mgoblog_processed_data: list[dict]):
@@ -63,13 +63,17 @@ class PyMongoMgoBlogContentRepository(AbstractMgoBlogContentRepository):
         ].bulk_write(operations)
         print(result)
 
-    def _get_raw_mgoblog_content(self, url) -> Union[models.MgoblogContentLandingDataSchema, None]:
-        result_set = self.client[LANDING_DATABASE_NAME][MGOBLOG_CONTENT_COLLECTION_NAME].find_one({'url': url})
-        if result_set:
-            result = models.MgoblogContentLandingDataSchema(**result_set)
-            return result
+    def _get_raw_mgoblog_content(self, urls: list[str]) -> list[models.MgoblogContentLandingDataSchema]:
+        result_set = self.client[LANDING_DATABASE_NAME][MGOBLOG_CONTENT_COLLECTION_NAME].find({'url': {'$in': urls}})
         
-        return None
+        final_results = []
+        if result_set:
+            
+            result_list = list(result_set)
+            for result in result_list:
+                final_results.append(models.MgoblogContentLandingDataSchema(**result))
+        
+        return final_results
     
     def _add_processed_mgoblog_content(self, mgoblog_processed_data: list[models.MgoblogContentProcessedDataSchema]):
         
