@@ -6,7 +6,7 @@ import pymongo
 from ingest_mgoblog_data.common import repository
 
 class AbstractUnitOfWork(abc.ABC):
-    content = repository.AbstractMgoBlogContentRepository
+    content: repository.AbstractMgoBlogContentRepository
 
     def __enter__(self) -> AbstractUnitOfWork:
         return self

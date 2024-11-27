@@ -15,18 +15,8 @@ class AbstractVectorDB(abc.ABC):
     
 class ChromaVectorDB(AbstractVectorDB):
 
-    def __init__(self, host='http://vector_db:6333', port=6333):
-        self.host = host
-        self.port = port
-
-    @property
-    def client(self):
-        try:
-            return self._client
-        
-        except AttributeError:
-            self._client = chromadb.HttpClient(host=self.host, port=self.port)
-            return self._client
+    def __init__(self, client: chromadb.HttpClient):
+        self.client = client
         
     def _get_create_collection(self, collection_name: str):
         """

@@ -1,9 +1,9 @@
 from index_content.common.models import MgoBlogContentEmbedding
 from index_content.common.vector_db import ChromaVectorDB
 
-def test_chromadb_vector_db():
-
-    vector = ChromaVectorDB()
+def test_chromadb_vector_db(test_vector_db_client):
+    client = test_vector_db_client
+    vector = ChromaVectorDB(client)
 
     embedding_one = MgoBlogContentEmbedding(id="test_id", url="/test/url/one", embedding=[0,1], text="Hello")
     embedding_two = MgoBlogContentEmbedding(id="test_id_2", url="/test/url/two", embedding=[0,0], text="Hello again")
