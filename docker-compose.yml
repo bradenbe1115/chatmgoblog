@@ -31,7 +31,7 @@ services:
     build:
       dockerfile: ./src/index_content/tests/tests.Dockerfile
     depends_on:
-      - elt_db
+      - test_vector_db
     ports:
       - "9000:8080"
     env_file:
@@ -82,27 +82,16 @@ services:
     networks:
       - shared
 
-  scrape_mgoblog_data:
+  test_vector_db:
     build:
-      dockerfile: ./src/ingest_mgoblog_data/scrape_mgoblog_data/Dockerfile
-    depends_on:
-      - elt_db
+      dockerfile: ./src/pipeline_framework/vector_db/Dockerfile
     ports:
-      - "9000:8080"
+      - 6333:6333
+    volumes:
+      - ./src/pipeline_framework/test_vector_db/db_path:/db_path
+      - ./src/pipeline_framework/test_vector_db/index_data:/chroma/.chroma/index
     profiles:
-      - scrape_mgoblog_data
-    networks:
-      - shared
-
-  ingest_mgoblog_data:
-    build:
-      dockerfile: ./src/ingest_mgoblog_data/Dockerfile
-    depends_on:
-      - elt_db
-    ports:
-      - "9000:8080"
-    profiles:
-      - ingest_mgoblog_data
+      - test_vector_db
     networks:
       - shared
 
