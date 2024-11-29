@@ -37,6 +37,20 @@ services:
     profiles:
       - test_embed
 
+  test_content_index:
+    build:
+      dockerfile: ./src/content_index/tests/tests.Dockerfile
+    depends_on:
+      - test_vector_db
+    ports:
+      - "9000:8080"
+    env_file:
+      - .env
+    profiles:
+      - test_content_index
+    networks:
+      - shared
+
   elt_db:
     build:
       dockerfile: ./src/pipeline_framework/elt_db/Dockerfile

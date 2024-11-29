@@ -1,7 +1,6 @@
 import abc
 import pymongo
 from ingest_mgoblog_data.common import models
-from typing import Union
 
 # Global variables for db and table names regardless of repository abstraction
 LANDING_DATABASE_NAME = "landing"
