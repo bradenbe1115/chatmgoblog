@@ -14,3 +14,10 @@ def get_mgoblog_content_by_url(uow: unit_of_work.AbstractUnitOfWork, url: str) -
         retr_content = uow.index.get_mgoblog_content(url=url)
 
     return retr_content
+
+def get_similar_mgoblog_content(uow: unit_of_work.AbstractUnitOfWork, embeddings: list[list[float]], top_n_results: int) -> list[models.MgoBlogContent]:
+
+    with uow:
+        retr_content = uow.index.get_similar_mgoblog_content(embeddings=embeddings, top_n_results=top_n_results)
+
+    return retr_content

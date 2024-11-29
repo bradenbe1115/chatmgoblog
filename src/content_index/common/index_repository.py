@@ -14,11 +14,7 @@ class AbstractIndexRepository(abc.ABC):
             content (list[models.MgoBlogContent])
         """
         self._add_mgoblog_content(content=content)
-
-    @abc.abstractmethod
-    def _add_mgoblog_content(self, content: list[models.MgoBlogContent]) -> None:
-        raise NotImplementedError
-
+    
     def get_mgoblog_content(self, url: str) -> list[models.MgoBlogContent]:
         """
         Returns a list of Mgoblog content with matching url from indexed database.
@@ -27,28 +23,53 @@ class AbstractIndexRepository(abc.ABC):
             url (str)
         """
         return self._get_mgoblog_content(url)
+    
+    def get_similar_mgoblog_content(self, embeddings: list[list[float]], top_n_results:int = 5) -> list[models.MgoBlogContent]:
+        """
+            Returns the n most similar Mgoblog content pieces in the database based on embedding similarity.
+
+            Args:
+                embeddings (list[list[float]]): a list of embeddings that will be used to query against the database for similarity
+                top_n_results (int): number of results to return from database
+        """
+        return self._get_similar_mgoblog_content(embeddings, top_n_results)
+
+    @abc.abstractmethod
+    def _add_mgoblog_content(self, content: list[models.MgoBlogContent]) -> None:
+        raise NotImplementedError
 
     @abc.abstractmethod
     def _get_mgoblog_content(self, url: str) -> list[models.MgoBlogContent]:
         raise NotImplementedError
+    
+    @abc.abstractmethod
+    def _get_similar_mgoblog_content(self, embeddings: list[list[float]], top_n_results: int) -> list[models.MgoBlogContent]:
+        raise NotImplementedError
 
 
 class ChromaDBIndexRepository(AbstractIndexRepository):
+    field_include_list = ["embeddings", "documents", "metadatas"]
 
     def __init__(self, client: chromadb.HttpClient):
         self.client = client
 
-    def _get_create_collection(self, collection_name: str):
+    @property
+    def mgoblog_content_collection(self):
+        return self.client.create_collection(name="mgoblog_content_embeddings", get_or_create=True)
+    
+    def _parse_chromadb_results(self, results: dict) -> list[models.MgoBlogContent]:
         """
-        Gets a collection, creates it if it doesn't exist already
+            Parses results from chromadb client into a list of MgoBlogContent objects
         """
-        return self.client.create_collection(name=collection_name, get_or_create=True)
+        final_results = []
+        for i in range(0, len(results["ids"])):
+            final_results.append(models.MgoBlogContent(id=results["ids"][i], url=results["metadatas"][i]["url"], embedding=results["embeddings"][i], text=results["documents"][i]))
+
+        return final_results
 
     def _add_mgoblog_content(self, content: list[models.MgoBlogContent]):
-        mgoblog_content_collection = self._get_create_collection(
-            collection_name="mgoblog_content_embeddings"
-        )
-        mgoblog_content_collection.add(
+        
+        self.mgoblog_content_collection.add(
             ids=[x.id for x in content],
             embeddings=[x.embedding for x in content],
             metadatas=[{"url": x.url} for x in content],
@@ -56,15 +77,13 @@ class ChromaDBIndexRepository(AbstractIndexRepository):
         )
 
     def _get_mgoblog_content(self, url: str) -> list[models.MgoBlogContent]:
-        mgoblog_content_collection = self._get_create_collection(
-            collection_name="mgoblog_content_embeddings"
-        )
 
+        results = self.mgoblog_content_collection.get(where={"url":url}, include=self.field_include_list)
         
-        results = mgoblog_content_collection.get(where={"url":url}, include=["embeddings", "documents", "metadatas"])
-        
-        final_results = []
-        for i in range(0,len(results["ids"])):
-            final_results.append(models.MgoBlogContent(id=results["ids"][i], url=results["metadatas"][i]["url"], embedding=results["embeddings"][i], text=results["documents"][i]))
-
+        final_results = self._parse_chromadb_results(results = results)
+        return final_results
+    
+    def _get_similar_mgoblog_content(self, embeddings, top_n_results) -> list[models.MgoBlogContent]:
+        results = self.mgoblog_content_collection.query(query_embeddings=embeddings, n_results=top_n_results, include=self.field_include_list)
+        final_results = self._parse_chromadb_results(results=results)
         return final_results
