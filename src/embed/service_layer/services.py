@@ -1,4 +1,4 @@
-from index_content.common import chunker, embedder, models
+from embed.common import chunker, embedder, models
 
 
 def embed(chunker: chunker.AbstractChunker, embedder: embedder.AbstractEmbedder, text_data: list[str]) -> list[models.EmbeddedTextData]:

@@ -1,6 +1,6 @@
 import os
-from index_content.common.embedder import HuggingFaceInferenceAPIEmbedder
-from index_content.common.embedder import HuggingFaceInferenceAPIInputs
+from embed.common.embedder import HuggingFaceInferenceAPIEmbedder
+from embed.common.embedder import HuggingFaceInferenceAPIInputs
 
 def test_hugging_face_inference_api_embedder_valid_model():
     access_token = os.getenv("HUGGING_FACE_INFERENCE_API_ACCESS_TOKEN")

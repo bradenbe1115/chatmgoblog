@@ -27,19 +27,15 @@ services:
     networks:
       - shared
 
-  test_index_content:
+  test_embed:
     build:
-      dockerfile: ./src/index_content/tests/tests.Dockerfile
-    depends_on:
-      - test_vector_db
+      dockerfile: ./src/embed/tests/tests.Dockerfile
     ports:
       - "9000:8080"
     env_file:
       - .env
     profiles:
-      - test_index_content
-    networks:
-      - shared
+      - test_embed
 
   elt_db:
     build:

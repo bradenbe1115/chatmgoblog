@@ -1,5 +1,5 @@
-from index_content.common import embedder, chunker
-from index_content.service_layer import services
+from embed.common import embedder, chunker
+from embed.service_layer import services
 import random
 
 class FixedSequenceChunker(chunker.AbstractChunker):
