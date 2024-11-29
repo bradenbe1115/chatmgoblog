@@ -50,20 +50,34 @@ class AbstractIndexRepository(abc.ABC):
 class ChromaDBIndexRepository(AbstractIndexRepository):
     field_include_list = ["embeddings", "documents", "metadatas"]
 
-    def __init__(self, client: chromadb.HttpClient):
+    def __init__(self, client: chromadb.HttpClient, content_collection_name: str= "mgoblog_content_embeddings"):
         self.client = client
+        self.content_collection_name = content_collection_name
 
     @property
     def mgoblog_content_collection(self):
-        return self.client.create_collection(name="mgoblog_content_embeddings", get_or_create=True)
+        return self.client.create_collection(name=self.content_collection_name, get_or_create=True)
     
-    def _parse_chromadb_results(self, results: dict) -> list[models.MgoBlogContent]:
+    def _parse_chromadb_get_results(self, results: dict) -> list[models.MgoBlogContent]:
         """
-            Parses results from chromadb client into a list of MgoBlogContent objects
+            Parses results from chromadb client get request into a list of MgoBlogContent objects
         """
         final_results = []
         for i in range(0, len(results["ids"])):
             final_results.append(models.MgoBlogContent(id=results["ids"][i], url=results["metadatas"][i]["url"], embedding=results["embeddings"][i], text=results["documents"][i]))
+
+        return final_results
+    
+    def _parse_chromadb_query_results(self, results: dict) -> list[models.MgoBlogContent]:
+        """
+            Parses results from chromadb client query request into a list of MgoBlogContent objects
+        """
+        final_results = []
+        for i in range(0, len(results["ids"])):
+            interm_result = []
+            for j in range(0, len(results["ids"][i])):
+                interm_result.append(models.MgoBlogContent(id=results["ids"][i][j], url=results["metadatas"][i][j]["url"], embedding=results["embeddings"][i][j], text=results["documents"][i][j]))
+            final_results.append(interm_result)
 
         return final_results
 
@@ -80,10 +94,10 @@ class ChromaDBIndexRepository(AbstractIndexRepository):
 
         results = self.mgoblog_content_collection.get(where={"url":url}, include=self.field_include_list)
         
-        final_results = self._parse_chromadb_results(results = results)
+        final_results = self._parse_chromadb_get_results(results = results)
         return final_results
     
-    def _get_similar_mgoblog_content(self, embeddings, top_n_results) -> list[models.MgoBlogContent]:
+    def _get_similar_mgoblog_content(self, embeddings, top_n_results) -> list[list[models.MgoBlogContent]]:
         results = self.mgoblog_content_collection.query(query_embeddings=embeddings, n_results=top_n_results, include=self.field_include_list)
-        final_results = self._parse_chromadb_results(results=results)
+        final_results = self._parse_chromadb_query_results(results=results)
         return final_results

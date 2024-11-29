@@ -1,4 +1,6 @@
 from content_index.common import index_repository, models
+import numpy as np
+import random
 
 def test_chromadb_index_repo(test_chromadb_client):
     repo = index_repository.ChromaDBIndexRepository(test_chromadb_client)
@@ -16,3 +18,24 @@ def test_chromadb_index_repo(test_chromadb_client):
 
     retr_test_two_url_results = repo.get_mgoblog_content(url="/test_two")
     assert len(retr_test_two_url_results) == 2
+
+def test_chromadb_get_similar_content(test_chromadb_client):
+
+    content = []
+    for i in range(0,20):
+        content.append(models.MgoBlogContent(id=str(i), url=f"/test/{i%5}", embedding=[np.random.normal(i*10,.1),np.random.normal(i*10,.1)], text=f"Test {i}"))
+    
+    repo = index_repository.ChromaDBIndexRepository(test_chromadb_client, content_collection_name=f"test_collection_{int(random.random()*1000)}")
+    repo.add_mgoblog_content(content)
+
+    query_embeddings = [[0,0]]
+    similar_results = repo.get_similar_mgoblog_content(embeddings=query_embeddings, top_n_results=10)
+
+    assert len(similar_results[0]) == 10
+    
+    # Based on distributions, should return the first content entry but not the last -- very very unlikely although it is random
+    assert "0" in [x.id for x in similar_results[0]]
+    assert "18" not in [x.id for x in similar_results[0]]
+
+
+    

@@ -15,5 +15,6 @@ COPY src/content_index content_index
 ENV PYTHONPATH="/app/content_index:${PYTHONPATH}"
 
 RUN pip install pytest
+RUN pip install numpy
 
 ENTRYPOINT ["pytest","-s","content_index/tests"]
