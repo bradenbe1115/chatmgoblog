@@ -1,17 +1,6 @@
 from pydantic import BaseModel
 
-class MgoBlogContentEmbedding(BaseModel):
-    id: str
-    url: str
+class EmbeddedTextData(BaseModel):
+    index: int
     text: str
-    embedding: list[float]
-
-class MgoblogContentProcessedDataSchema(BaseModel):
-    url: str
-    raw_html: str
-    collected_ts: str
-    tags: list[str]
-    title: str
-    author: str
-    body: str
-    date_written: str
+    embedded_text: list[float]

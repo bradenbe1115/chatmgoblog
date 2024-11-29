@@ -1,7 +1,9 @@
-from chatmgoblog.embeddings import embedder, chunker
+from index_content.common import chunker
 from common import vector_db, content_repository, models
 
 import os
+
+from index_content.common import embedder
 
 DB_URI = "elt_db"
 LANDING_DB_NAME = "landing"
