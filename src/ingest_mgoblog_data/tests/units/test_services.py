@@ -19,8 +19,6 @@ class FakeRepository(repository.AbstractMgoBlogContentRepository):
         self.data_processed = True
     
     def _get_raw_mgoblog_content(self, urls):
-        for r in self._raw_content:
-            print(r)
         results = [r for r in self._raw_content if r.url in urls]
         return results
 

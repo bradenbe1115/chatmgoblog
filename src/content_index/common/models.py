@@ -7,3 +7,6 @@ class MgoBlogContent(BaseModel):
     url: str
     embedding: list[float]
     text: str
+
+    def __hash__(self):
+        return hash(self.id)
