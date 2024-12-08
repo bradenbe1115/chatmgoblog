@@ -2,6 +2,7 @@ import abc
 
 from pydantic import BaseModel
 import requests
+import time
 
 class AbstractEmbedder(abc.ABC):
     """
@@ -53,15 +54,32 @@ class HuggingFaceInferenceAPIEmbedder(AbstractEmbedder):
     def headers(self):
         return {"Authorization": f"Bearer {self.api_inputs.access_token}", "x-wait-for-model":"true"}
     
+    def _post(self, url: str, headers: dict = None, json: dict = None, retries: int = 0):
+
+        try:
+            response = requests.post(url=url, headers=headers, json=json)
+            return response
+
+        except Exception as e:
+            print(f"An error occurred: {e}.")
+            
+            if retries > 0:
+                time.sleep(10)
+                return self._post(url=url, headers=headers, json=json, retries=retries-1)
+            
+            else:
+                return None
+
+    
     def _embed_data(self, data: list[str], chunk_size:int=100) -> list[list[int]]:
 
         results = []
         for i in range(0,len(data),chunk_size):
             payload = {"inputs": data[i:i+chunk_size]}
 
-            response = requests.post(f"{self.base_url}/{self.model_endpoint}", headers=self.headers, json=payload)
+            response = self._post(url=f"{self.base_url}/{self.model_endpoint}", headers=self.headers, json=payload)
 
-            if response.status_code == 200:
+            if response is not None and response.status_code == 200:
                 result = response.json()
                 results += result
             else:

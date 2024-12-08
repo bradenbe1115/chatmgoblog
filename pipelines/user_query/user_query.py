@@ -14,7 +14,7 @@ def user_query(user_query: str):
 
     results = content_index_services.get_similar_mgoblog_content(uow=content_index_depencencies["uow"], embeddings=[x.embedded_text for x in embedded_text], top_n_results=30)[0]
     for result in results:
-        print(f"url: {result.url}; {result.document}")
+        print(f"url: {result.url}; {result.text}")
 
 if __name__ == "__main__":
-    user_query("What were some key plays in michigan's game against Northwestern?")
+    user_query("What is Makari Paige good at?")
