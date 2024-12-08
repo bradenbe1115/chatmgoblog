@@ -4,14 +4,16 @@ ENV PYTHONUNBUFFERED 1
 
 RUN pip install --upgrade pip
 
-# Copy over modules and install requirements
+COPY requirements.txt /tmp/
+RUN pip install -r /tmp/requirements.txt
+
+WORKDIR /app
+
+RUN mkdir -p /src
 COPY src/ /src/
 RUN pip install -e /src
 
-# Create directories
-RUN mkdir -p /src tests
-
 COPY tests/ /tests/
-RUN pip install --no-cache-dir -r /tests/requirements.txt
+RUN pip install pytest
 
-ENTRYPOINT ["pytest","-s","tests"]
+ENTRYPOINT ["pytest","-s","/tests/unit", "/tests/integration"]

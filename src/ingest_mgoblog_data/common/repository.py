@@ -46,6 +46,16 @@ class AbstractMgoBlogContentRepository(abc.ABC):
     def _add_processed_mgoblog_content(self, mgoblog_processed_data: list[dict]):
         raise NotImplementedError
     
+    def list_mgoblog_content(self) -> list[models.MgoblogContentProcessedDataSchema]:
+        """
+            Retrieves all processed mgoblog data from repo and returns it in a list
+        """
+        return self._list_mgoblog_content()
+    
+    @abc.abstractmethod
+    def _list_mgoblog_content(self) -> list[models.MgoblogContentProcessedDataSchema]:
+        raise NotImplementedError
+    
 
 class PyMongoMgoBlogContentRepository(AbstractMgoBlogContentRepository):
 
@@ -82,4 +92,16 @@ class PyMongoMgoBlogContentRepository(AbstractMgoBlogContentRepository):
             MGOBLOG_CONTENT_COLLECTION_NAME
         ].bulk_write(operations)
         print(result)
+
+    def _list_mgoblog_content(self) -> list[models.MgoblogContentProcessedDataSchema]:
+
+        result_set = self.client[PROCESSED_DATABASE_NAME][MGOBLOG_CONTENT_COLLECTION_NAME].find()
+
+        final_result = []
+        if result_set:
+
+            for result in result_set:
+                final_result.append(models.MgoblogContentProcessedDataSchema(**result))
+
+        return final_result
     

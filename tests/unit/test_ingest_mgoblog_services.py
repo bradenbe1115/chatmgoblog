@@ -22,6 +22,10 @@ class FakeRepository(repository.AbstractMgoBlogContentRepository):
         results = [r for r in self._raw_content if r.url in urls]
         return results
 
+    def _list_mgoblog_content(self):
+        results = [r for r in self._raw_content]
+        return results
+
 
 class FakeUnitOfWork(unit_of_work.AbstractUnitOfWork):
     def __init__(self):

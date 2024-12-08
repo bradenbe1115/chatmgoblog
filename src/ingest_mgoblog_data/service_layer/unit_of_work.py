@@ -28,5 +28,5 @@ class PymongoUnitOfWork(AbstractUnitOfWork):
         self.content = repository.PyMongoMgoBlogContentRepository(self.client)
         return super().__enter__()
     
-    def __exit__(self):
+    def __exit__(self, *args):
         self.client.close()

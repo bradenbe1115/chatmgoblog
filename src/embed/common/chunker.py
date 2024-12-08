@@ -31,11 +31,7 @@ class SentenceChunker(AbstractChunker):
     def _chunk_text(self, data):
         return nltk.sent_tokenize(data)
 
-    
-def chunk_text(data: str):
+class IdentityChunker(AbstractChunker):
 
-    chunker = SentenceChunker()
-
-    result = chunker.chunk_text(data)
-
-    return result
+    def _chunk_text(self, data):
+        return data

@@ -51,19 +51,25 @@ class HuggingFaceInferenceAPIEmbedder(AbstractEmbedder):
 
     @property
     def headers(self):
-        return {"Authorization": f"Bearer {self.api_inputs.access_token}"}
+        return {"Authorization": f"Bearer {self.api_inputs.access_token}", "x-wait-for-model":"true"}
     
-    def _embed_data(self, data: list[str]) -> list[list[int]]:
+    def _embed_data(self, data: list[str], chunk_size:int=100) -> list[list[int]]:
 
-        payload = {"inputs": data}
+        results = []
+        for i in range(0,len(data),chunk_size):
+            payload = {"inputs": data[i:i+chunk_size]}
 
-        response = requests.post(f"{self.base_url}/{self.model_endpoint}", headers=self.headers, json=payload)
+            response = requests.post(f"{self.base_url}/{self.model_endpoint}", headers=self.headers, json=payload)
 
-        if response.status_code == 200:
-            result = response.json()
-            return result
+            if response.status_code == 200:
+                result = response.json()
+                results += result
+            else:
+                print(f"Failed to successfully retrieve embedded vector. Received status code: {response.status_code}; Error Message: {response.text}")
+        
+        if len(results) > 0:
+            return results
         
         else:
-            print(f"Failed to successfully retrieve embedded vector. Received status code: {response.status_code}; Error Message: {response.text}")
-            return []
+            raise RuntimeError("Unable to embed data successfully.")
         

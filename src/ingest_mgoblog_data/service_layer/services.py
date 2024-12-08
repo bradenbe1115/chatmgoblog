@@ -3,10 +3,16 @@ from ingest_mgoblog_data.common import models
 from ingest_mgoblog_data.service_layer import unit_of_work
 
 
-def scrape_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, iterations: int = 5):
+def scrape_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, start_url: str="https://www.mgoblog.com/additional-stories", iterations: int = 5):
+    """
+        Scrapes web pages from mgoblog to gather content
+
+        Args:
+            start_url (str): URL to start scraping from. Default is the additional content page on Mgoblog
+            iterations (int): Number of pages to iterate through by hitting the next button on the blog
+    """
 
     ws = MGoBlogWebScraper()
-    start_url = "https://www.mgoblog.com/additional-stories"
 
     results = ws.get_content(start_url=start_url,max_iteration=iterations)
     print(f"{len(results)} pages scraped starting at {start_url}")
@@ -17,6 +23,14 @@ def scrape_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, iterations: int = 
     return {"landed_urls":[x.url for x in results]}
 
 def process_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, event: dict):
+    """
+        Processes raw mgoblog content scraped from the website.
+
+        Parses out repeatable, valuable metadata from web pages to store in repo.
+
+        Args:
+            event (dict): an event dictionary containing a key for "landed_urls" that points to a list of urls for raw mgoblog content
+    """
 
     ws = MGoBlogWebScraper()
     results = []
@@ -35,4 +49,17 @@ def process_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, event: dict):
             uow.content.add_processed_mgoblog_content(results)
         return {"processed_urls":[x.url for x in results]}
 
-    return {"process_urls":[]}
+    return {"processed_urls":[]}
+
+def list_processed_mgoblog_content(uow: unit_of_work.AbstractUnitOfWork) -> list[models.MgoblogContentProcessedDataSchema]:
+    """
+        Lists all processed Mgoblog content stored in the repository
+    """
+
+    with uow:
+        mgoblog_content = uow.content.list_mgoblog_content()
+
+    if len(mgoblog_content) > 0:
+        return mgoblog_content
+    
+    return []

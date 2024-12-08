@@ -1,3 +1,4 @@
+import pytest
 import os
 from embed.common.embedder import HuggingFaceInferenceAPIEmbedder
 from embed.common.embedder import HuggingFaceInferenceAPIInputs
@@ -21,7 +22,6 @@ def test_hugging_face_inference_api_embedder_invalid_model():
     embedder = HuggingFaceInferenceAPIEmbedder(api_inputs=HuggingFaceInferenceAPIInputs(access_token=access_token), model_endpoint = model_endpoint)
 
     test_data = ["Hello There", "I'm a test string"]
-    results = embedder.embed_data(data=test_data)
-
-    assert len(results) == 0
+    with pytest.raises(RuntimeError):
+        results = embedder.embed_data(data=test_data)
     
