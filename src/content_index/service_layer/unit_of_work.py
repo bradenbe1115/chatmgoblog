@@ -19,10 +19,11 @@ def chromadb_client_factory() -> chromadb.HttpClient:
 
 class ChromaDBUnitOfWork(AbstractUnitOfWork):
 
-    def __init__(self, client_factory=chromadb_client_factory):
+    def __init__(self, client_factory=chromadb_client_factory, content_collection_name:str="mgoblog_content_embeddings"):
         self.client_factory = client_factory
+        self.content_collection_name = content_collection_name
 
     def __enter__(self):
         self.client = self.client_factory()
-        self.index = index_repository.ChromaDBIndexRepository(self.client)
+        self.index = index_repository.ChromaDBIndexRepository(self.client, content_collection_name=self.content_collection_name)
         return super().__enter__()

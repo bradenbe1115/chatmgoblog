@@ -21,3 +21,9 @@ def get_similar_mgoblog_content(uow: unit_of_work.AbstractUnitOfWork, embeddings
         retr_content = uow.index.get_similar_mgoblog_content(embeddings=embeddings, top_n_results=top_n_results)
 
     return retr_content
+
+def list_mgoblog_content(uow: unit_of_work.AbstractUnitOfWork) -> list[models.MgoBlogContent]:
+    with uow:
+        retr_content = uow.index.list_mgoblog_content()
+    
+    return retr_content
