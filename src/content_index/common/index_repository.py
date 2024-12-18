@@ -33,6 +33,9 @@ class AbstractIndexRepository(abc.ABC):
                 top_n_results (int): number of results to return from database
         """
         return self._get_similar_mgoblog_content(embeddings, top_n_results)
+    
+    def list_mgoblog_content(self):
+        return self._list_mgoblog_content()
 
     @abc.abstractmethod
     def _add_mgoblog_content(self, content: list[models.MgoBlogContent]) -> None:
@@ -45,12 +48,16 @@ class AbstractIndexRepository(abc.ABC):
     @abc.abstractmethod
     def _get_similar_mgoblog_content(self, embeddings: list[list[float]], top_n_results: int) -> list[models.MgoBlogContent]:
         raise NotImplementedError
+    
+    @abc.abstractmethod
+    def _list_mgoblog_content() -> list[models.MgoBlogContent]:
+        raise NotImplementedError
 
 
 class ChromaDBIndexRepository(AbstractIndexRepository):
     field_include_list = ["embeddings", "documents", "metadatas"]
 
-    def __init__(self, client: chromadb.HttpClient, content_collection_name: str= "mgoblog_content_embeddings"):
+    def __init__(self, client: chromadb.HttpClient, content_collection_name: str):
         self.client = client
         self.content_collection_name = content_collection_name
 
@@ -100,4 +107,9 @@ class ChromaDBIndexRepository(AbstractIndexRepository):
     def _get_similar_mgoblog_content(self, embeddings, top_n_results) -> list[list[models.MgoBlogContent]]:
         results = self.mgoblog_content_collection.query(query_embeddings=embeddings, n_results=top_n_results, include=self.field_include_list)
         final_results = self._parse_chromadb_query_results(results=results)
+        return final_results
+    
+    def _list_mgoblog_content(self) -> list[models.MgoBlogContent]:
+        results = self.mgoblog_content_collection.get(include=self.field_include_list)
+        final_results = self._parse_chromadb_get_results(results = results)
         return final_results
