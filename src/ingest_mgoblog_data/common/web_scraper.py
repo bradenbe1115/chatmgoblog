@@ -139,7 +139,7 @@ class MGoBlogWebScraper:
         # Extract page body content
         body_div = article.find("div", class_="field--name-body")
         if body_div is not None:
-            body = body_div.text.strip()
+            body = body_div.get_text(separator=" ", strip=True)
         else:
             body = None
 
