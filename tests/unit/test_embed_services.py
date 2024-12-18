@@ -21,11 +21,10 @@ def test_embed_service():
     chunker = FixedSequenceChunker()
     embedder = FakeEmbedder()
 
-    results = services.embed(chunker=chunker, embedder=embedder, text_data=["abcdefghij", "klmnopqrst"])
+    results = services.embed_content(chunker=chunker, embedder=embedder, text_data=[{"text": "abcdefghij", "url": "test_one/"}, {"text":"klmnopqrst","url":"test_two/"}])
 
     assert len(results) == 4
-    assert results[0].text == "abcde"
-    assert len(results[0].embedded_text) == 2
-    assert results[0].index == 0
-    assert results[1].index == 0
-    assert results[-1].index == 1
+    assert results[0]["text"] == "abcde"
+    assert len(results[0]["embedded"]) == 2
+    assert results[-1]["text"] == "pqrst"
+    assert results[-1]["url"] == "test_two/"
