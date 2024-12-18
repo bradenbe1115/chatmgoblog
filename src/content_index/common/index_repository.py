@@ -50,7 +50,7 @@ class AbstractIndexRepository(abc.ABC):
         raise NotImplementedError
     
     @abc.abstractmethod
-    def _list_mgoblog_content() -> list[models.MgoBlogContent]:
+    def _list_mgoblog_content(self) -> list[models.MgoBlogContent]:
         raise NotImplementedError
 
 

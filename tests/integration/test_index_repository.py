@@ -3,7 +3,7 @@ import numpy as np
 import random
 
 def test_chromadb_index_repo(test_chromadb_client):
-    repo = index_repository.ChromaDBIndexRepository(test_chromadb_client)
+    repo = index_repository.ChromaDBIndexRepository(test_chromadb_client, content_collection_name="test_collection")
 
     data = [models.MgoBlogContent(id="1", url="/test", embedding=[0.0, 1.3], text="Test One"),
             models.MgoBlogContent(id="2", url="/test_two", embedding=[-9.2, 1.9], text="Test Two"),

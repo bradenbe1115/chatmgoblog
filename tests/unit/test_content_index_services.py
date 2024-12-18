@@ -12,7 +12,6 @@ class FakeIndex(index_repository.AbstractIndexRepository):
     def _add_mgoblog_content(self, content):
         for c in content:
             self._index.add(c)
-        
     
     def _get_mgoblog_content(self, url):
         results = [r for r in self._index if r.url == url]
@@ -20,6 +19,9 @@ class FakeIndex(index_repository.AbstractIndexRepository):
     
     def _get_similar_mgoblog_content(self, embeddings, top_n_results):
         return list(random.sample(self._index,min(top_n_results, len(self._index))))
+    
+    def _list_mgoblog_content(self):
+        return list(self._index)
     
 class FakeUnitOfWork(unit_of_work.AbstractUnitOfWork):
     def __init__(self):
