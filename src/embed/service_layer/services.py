@@ -22,6 +22,7 @@ def embed_content(chunker: chunker.AbstractChunker, embedder: embedder.AbstractE
     for i in range(0, len(text_data)):
         tmp_dict = text_data[i]
         text_chunks = chunker.chunk_text(text_data[i][text_field_name])
+        print(f"Text chunks: {text_chunks}")
 
         for text_chunk in text_chunks:
             tmp_dict = text_data[i].copy()

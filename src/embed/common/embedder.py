@@ -22,6 +22,7 @@ class AbstractEmbedder(abc.ABC):
                 list of embeddings, which are represented as a list of floats
 
         """
+        print(f"Embedding text: {data}")
         return self._embed_data(data)
     
     @abc.abstractmethod

@@ -4,6 +4,18 @@ networks:
 
 services:
 
+  prefect_demo:
+    build:
+      dockerfile: ./pipelines/mgoblog_ingestion_prefect_pipeline/Dockerfile
+    ports:
+      - "4200:4200"
+    env_file:
+      - .env
+    environment:
+      - PREFECT_API_HOST=http://0.0.0.0
+    profiles:
+      - prefect_demo
+
   mgoblog_ingestion_pipeline:
     build:
       dockerfile: ./pipelines/mgoblog_ingestion_pipeline/Dockerfile
