@@ -3,6 +3,7 @@ FROM python:3.10-slim-bookworm
 ENV PYTHONUNBUFFERED 1
 
 RUN pip install --upgrade pip
+RUN pip install flask
 
 WORKDIR /app
 
@@ -13,6 +14,9 @@ RUN mkdir -p /src
 COPY src/ /src/
 RUN pip install -e /src
 
-COPY pipelines/user_query/user_query.py .
+RUN mkdir -p /pipelines
+COPY pipelines/ /pipelines/
 
-ENTRYPOINT ["python","user_query.py"]
+WORKDIR /pipelines/user_query
+
+CMD ["flask", "run", "--host=0.0.0.0", "--port=80"]
