@@ -13,10 +13,6 @@ RUN mkdir -p /src
 COPY src/ /src/
 RUN pip install -e /src
 
-RUN mkdir -p /pipelines
-COPY pipelines/ /pipelines/
-RUN pip install -e /pipelines
-
 COPY tests/ /tests/
 RUN pip install pytest
 
