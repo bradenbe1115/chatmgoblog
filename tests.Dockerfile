@@ -16,4 +16,4 @@ RUN pip install -e /src
 COPY tests/ /tests/
 RUN pip install pytest
 
-ENTRYPOINT ["pytest","-s","/tests/unit", "/tests/integration"]
+ENTRYPOINT ["pytest","-s","/tests/unit", "/tests/integration", "/tests/e2e"]

@@ -59,21 +59,24 @@ class AbstractMgoBlogContentRepository(abc.ABC):
 
 class PyMongoMgoBlogContentRepository(AbstractMgoBlogContentRepository):
 
-    def __init__(self, client: pymongo.MongoClient):
+    def __init__(self, client: pymongo.MongoClient, landing_database_name: str = LANDING_DATABASE_NAME, mgoblog_content_collection_name: str = MGOBLOG_CONTENT_COLLECTION_NAME, processed_database_name: str = PROCESSED_DATABASE_NAME):
         self.client = client
+        self.landing_database_name = landing_database_name
+        self.processed_database_name = processed_database_name
+        self.mgoblog_content_collection_name = mgoblog_content_collection_name
 
     def _add_raw_mgoblog_content(self, mgoblog_content_landing_data):
 
         operations = [pymongo.UpdateOne({'url': x.url},  {"$set": x.__dict__}, upsert=True) for x in mgoblog_content_landing_data]
 
 
-        result = self.client[LANDING_DATABASE_NAME][
-            MGOBLOG_CONTENT_COLLECTION_NAME
+        result = self.client[self.landing_database_name][
+            self.mgoblog_content_collection_name
         ].bulk_write(operations)
         print(result)
 
     def _get_raw_mgoblog_content(self, urls: list[str]) -> list[models.MgoblogContentLandingDataSchema]:
-        result_set = self.client[LANDING_DATABASE_NAME][MGOBLOG_CONTENT_COLLECTION_NAME].find({'url': {'$in': urls}})
+        result_set = self.client[self.landing_database_name][self.mgoblog_content_collection_name].find({'url': {'$in': urls}})
         
         final_results = []
         if result_set:
@@ -88,14 +91,14 @@ class PyMongoMgoBlogContentRepository(AbstractMgoBlogContentRepository):
         
         operations = [pymongo.UpdateOne({'url': x.url},  {"$set": x.__dict__}, upsert=True) for x in mgoblog_processed_data]
 
-        result = self.client[PROCESSED_DATABASE_NAME][
-            MGOBLOG_CONTENT_COLLECTION_NAME
+        result = self.client[self.processed_database_name][
+            self.mgoblog_content_collection_name
         ].bulk_write(operations)
         print(result)
 
     def _list_mgoblog_content(self) -> list[models.MgoblogContentProcessedDataSchema]:
 
-        result_set = self.client[PROCESSED_DATABASE_NAME][MGOBLOG_CONTENT_COLLECTION_NAME].find()
+        result_set = self.client[self.processed_database_name][self.mgoblog_content_collection_name].find()
 
         final_result = []
         if result_set:

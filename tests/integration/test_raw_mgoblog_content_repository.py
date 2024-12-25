@@ -3,7 +3,7 @@ from ingest_mgoblog_data.common.models import MgoblogContentLandingDataSchema
 
 def test_mgoblog_content_repository(test_elt_db_client):
     client = test_elt_db_client
-    repo = PyMongoMgoBlogContentRepository(client)
+    repo = PyMongoMgoBlogContentRepository(client, landing_database_name="test_landing_database", mgoblog_content_collection_name="test_mgoblog_content_collection",processed_database_name="test_processed_database")
 
     data = [MgoblogContentLandingDataSchema(url="/url_one", raw_html="Hello World", collected_ts=1234),
             MgoblogContentLandingDataSchema(url="/url_two", raw_html="Hello World Again", collected_ts=1234)]
