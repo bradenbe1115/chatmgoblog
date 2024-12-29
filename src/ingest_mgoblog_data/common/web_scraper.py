@@ -73,17 +73,22 @@ class MGoBlogWebScraper:
         soup = BeautifulSoup(page_content, 'html.parser')
         next_page_li = soup.find("li", class_="pager__item--next")
 
-        anchor_tag = next_page_li.find("a")
-
-        if anchor_tag is not None:
+        try:
+            anchor_tag  = next_page_li.find("a")
             return anchor_tag["href"]
-        
-        else:
+        except:
             return None
 
-    def _get_page_content(self, page_content: str) -> dict:
+    def extract_page_data(self, page_content: str) -> dict:
         """
-            Extract the data from a content page.
+            Extracts data from the HTML of a MGoBlog content page.
+
+            Function will find the following fields in the html and return within a dictionary:
+            - tags
+            - title
+            - author
+            - date written
+            - body (text of the body of the page's content)
 
             Args:
                 page_content (str): HTML of page to extract content data from
@@ -112,25 +117,33 @@ class MGoBlogWebScraper:
         # Extract author
         author_div = article.find("span", class_="field--name-uid")
         if author_div is not None:
-            author = author_div.text
+            author = author_div.text.strip()
         else:
             author = None
+
+        # Extract date written
+        author_date_div = article.find("div", class_="node__meta")
+        author_date_text = author_date_div.text 
+        if author is not None:
+            date_written = author_date_text.replace(author, "").strip()
+        else:
+            date_written = author_date_text.strip()
 
         # Extract page title
         title_header = article.find("h1", class_="page-title")
         if title_header is not None:
-            title = title_header.text
+            title = title_header.text.strip()
         else:
             title = None
 
         # Extract page body content
         body_div = article.find("div", class_="field--name-body")
         if body_div is not None:
-            body = body_div.text
+            body = body_div.get_text(separator=" ", strip=True)
         else:
             body = None
 
-        return {"tags": tags, "title": title, "author": author, "body": body}
+        return {"tags": tags, "title": title, "author": author, "body": body, "date_written": date_written}
     
     def get_content(self, start_url: str, max_iteration: int=5, iteration: int=0, results: list[dict]=None) -> list[MgoblogContentLandingDataSchema]:
         """
@@ -159,10 +172,10 @@ class MGoBlogWebScraper:
         for content_link in content_links:
             full_content_url = f"{self.site_root}{content_link}"
             print(full_content_url)
-            page_content = self._get_web_page(url=full_content_url)
+            web_page_html = self._get_web_page(url=full_content_url)
 
-            if len(page_content) > 0:
-                results.append(MgoblogContentLandingDataSchema(url=full_content_url, raw_html=page_content, collected_ts=int(time.time())))
+            if len(web_page_html) > 0:
+                results.append(MgoblogContentLandingDataSchema(url=full_content_url, raw_html=web_page_html, collected_ts=int(time.time())))
         
         else:
             return self.get_content(start_url=start_url, max_iteration=max_iteration, iteration=iteration+1, results=results)

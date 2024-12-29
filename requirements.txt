@@ -1,0 +1,7 @@
+requests
+pydantic
+nltk
+pymongo
+bs4
+chromadb
+langchain-text-splitters

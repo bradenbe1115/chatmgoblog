@@ -8,4 +8,4 @@ RUN pip install --upgrade pip
 COPY src/ /src/
 RUN pip install -e /src
 
-CMD ["python", "src/ingest_mgoblog_data/scrape_mgoblog_data/scrape_mgoblog_data.py"]
+CMD ["python", "src/ingest_mgoblog_data/run_mgoblog_pipeline.py"]

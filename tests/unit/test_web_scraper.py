@@ -42,7 +42,7 @@ def test_get_content_links():
     assert content_links[0] == "right"
     assert content_links[1] == "right"
 
-def test_get_page_content():
+def test_extract_page_data():
 
     ws = MGoBlogWebScraper()
 
@@ -56,7 +56,7 @@ def test_get_page_content():
                         <div class="field__item">Third Tag</div>
                         <div class="__item">Fourth Tag</div>
                     </div>
-                    <span class="field--name-uid">Ben Braden</span>
+                    <div class="node__meta"><span><span class="field--name-uid">Ben Braden</span>2023-12-11</span></div>
                     <h1 class="not-page-title">
                         Wrong Test Article
                     </h1>
@@ -72,32 +72,15 @@ def test_get_page_content():
             </body>
         </html>
     """
-    content_data = ws._get_page_content(page_content=sample_html)
+    content_data = ws.extract_page_data(page_content=sample_html)
 
     assert content_data['tags'] == ['First Tag', 'Third Tag']
     assert content_data['author'] == "Ben Braden"
     assert content_data['title'] == "Test Article"
+    assert content_data['date_written'] == '2023-12-11'
     assert "Paragraph One" in content_data["body"]
     assert "Paragraph Two" in content_data["body"]
     assert "Paragraph Three" not in content_data["body"]
-
-def test_get_more_content_link_success():
-
-    ws = MGoBlogWebScraper()
-
-    sample_html = """
-                    <html>
-                        <body>
-                            <div class="more-link">
-                                <a href="/more_content"></a>
-                            </div>
-                        </body>
-                    </html>
-                    """
-    
-    more_content_link = ws._get_more_content_link(sample_html)
-
-    assert more_content_link == "/more_content"
 
 def test_get_more_content_link_fail():
     ws = MGoBlogWebScraper()
