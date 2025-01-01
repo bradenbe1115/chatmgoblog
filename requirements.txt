@@ -5,3 +5,5 @@ pymongo
 bs4
 chromadb
 langchain-text-splitters
+langchain
+langchain_openai
