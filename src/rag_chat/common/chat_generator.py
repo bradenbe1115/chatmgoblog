@@ -36,9 +36,6 @@ class LangchainChatGenerator(AbstractChatGenerator):
     """
 
     def __init__(self, model: BaseChatModel, prompt: PromptTemplate):
-        """
-            Langchain implementation of 
-        """
         self.model = model
         self.prompt = prompt
 
