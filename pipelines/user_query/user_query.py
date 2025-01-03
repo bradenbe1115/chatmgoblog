@@ -16,4 +16,4 @@ def user_query():
 
     results = content_index_services.get_similar_mgoblog_content(uow=content_index_deps["uow"], embeddings=[x["embedded"] for x in embedded_text], top_n_results=30)[0]
     
-    return jsonify([x.__dict__ for x in results])
+    return jsonify([x.__dict__ for x in results]), 200

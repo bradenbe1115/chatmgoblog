@@ -43,4 +43,4 @@ class LangchainChatGenerator(AbstractChatGenerator):
         docs_content = "\n\n".join(doc.page_content for doc in state["context"])
         messages = self.prompt.invoke({"question": state["question"], "context": docs_content})
         response = self.model.invoke(messages)
-        return {"answer": response.content}
+        return response.content

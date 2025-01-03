@@ -13,6 +13,6 @@ def test_chat_generator(langchain_model):
 
     response = chat.generate_chat_answer(state)
     assert response is not None
-    print(response["answer"])
-    assert len(response["answer"]) > 0
-    assert "Ben Braden" in response["answer"]
+    print(response)
+    assert len(response) > 0
+    assert "Ben Braden" in response
