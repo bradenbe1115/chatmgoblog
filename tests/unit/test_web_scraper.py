@@ -78,7 +78,7 @@ def test_extract_page_data():
     assert content_data['author'] == "Ben Braden"
     assert content_data['title'] == "Test Article"
     assert content_data['date_written'] == '2023-12-11'
-    assert "Paragraph One" in content_data["body"]
+    assert "<p>Paragraph One</p>" in content_data["body"]
     assert "Paragraph Two" in content_data["body"]
     assert "Paragraph Three" not in content_data["body"]
 
