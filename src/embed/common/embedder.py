@@ -22,7 +22,6 @@ class AbstractEmbedder(abc.ABC):
                 list of embeddings, which are represented as a list of floats
 
         """
-        print(f"Embedding text: {data}")
         return self._embed_data(data)
     
     @abc.abstractmethod
@@ -84,7 +83,10 @@ class HuggingFaceInferenceAPIEmbedder(AbstractEmbedder):
                 result = response.json()
                 results += result
             else:
-                print(f"Failed to successfully retrieve embedded vector. Received status code: {response.status_code}; Error Message: {response.text}")
+                if response:
+                    print(f"Failed to successfully retrieve embedded vector. Received status code: {response.status_code}; Error Message: {response.text}")
+                else:
+                    print("No response returned from API.")
         
         if len(results) > 0:
             return results
