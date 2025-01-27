@@ -16,6 +16,18 @@ services:
     networks:
       - shared
 
+  incremental_mgoblog_embedding_pipeline:
+    build:
+      dockerfile: ./pipelines/incremental_mgoblog_embedding_pipeline/Dockerfile
+    ports:
+      - "9000:8080"
+    env_file:
+      - .env
+    profiles:
+      - incremental_mgoblog_embedding_pipeline
+    networks:
+      - shared
+
   all_tests:
     build:
       dockerfile: tests.Dockerfile
@@ -38,6 +50,21 @@ services:
       - FLASK_ENV=development
     profiles:
       - user_query_api
+    networks:
+      - shared
+
+  rag_chat_api:
+    build:
+      dockerfile: ./src/rag_chat/entrypoints/Dockerfile
+    ports:
+      - "5008:80"
+    env_file:
+      - .env
+    environment:
+      - FLASK_APP=flask_app.py
+      - FLASK_ENV=development
+    profiles:
+      - rag_chat_api
     networks:
       - shared
 
