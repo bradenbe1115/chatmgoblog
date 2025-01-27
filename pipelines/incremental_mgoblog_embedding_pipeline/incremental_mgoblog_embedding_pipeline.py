@@ -18,10 +18,10 @@ def incremental_mgoblog_embedding_pipeline():
 
     ingest_mgoblog_dependencies = ingest_mgoblog_bootstrap.bootstrap()
 
-    mgoblog_content = ingest_mgoblog_services.list_processed_mgoblog_content(uow=ingest_mgoblog_dependencies["uow"])
+    mgoblog_content = ingest_mgoblog_services.list_processed_mgoblog_content(repo=ingest_mgoblog_dependencies["repo"])
 
     content_index_depencencies = content_index_bootstrap.bootstrap()
-    embedded_content = content_index_services.list_mgoblog_content(uow=content_index_depencencies["uow"])
+    embedded_content = content_index_services.list_mgoblog_content(index=content_index_depencencies["index"])
 
     content_to_embed = find_content_not_embedded(mgoblog_content, embedded_content)
 
@@ -42,7 +42,7 @@ def incremental_mgoblog_embedding_pipeline():
             url = item["url"]
             content_to_index.append({"id": f"{i}:{url}","url": url, "embedding": item['embedded'], "text": item['body']})
 
-    content_index_services.add_mgoblog_content(uow=content_index_depencencies["uow"], data=content_to_index)
+    content_index_services.add_mgoblog_content(index=content_index_depencencies["index"], data=content_to_index)
 
 
 if __name__ == "__main__":

@@ -14,6 +14,6 @@ def user_query():
     
     embedded_text = embed_content(chunker=embed_deps["chunker"], embedder=embed_deps["embedder"], text_data=[{"query":user_query}], text_field_name="query")
 
-    results = content_index_services.get_similar_mgoblog_content(uow=content_index_deps["uow"], embeddings=[x["embedded"] for x in embedded_text], top_n_results=30)[0]
+    results = content_index_services.get_similar_mgoblog_content(index=content_index_deps["index"], embeddings=[x["embedded"] for x in embedded_text], top_n_results=30)[0]
     
     return jsonify([x.__dict__ for x in results]), 200

@@ -1,29 +1,24 @@
-from content_index.service_layer import unit_of_work
-from content_index.common import models
+from content_index.common import models, index
 
-def add_mgoblog_content(uow: unit_of_work.AbstractUnitOfWork, data: list[dict]) -> None:
+def add_mgoblog_content(index: index.AbstractIndex, data: list[dict]) -> None:
     content = [models.MgoBlogContent(**d) for d in data]
 
-    with uow:
-        uow.index.add_mgoblog_content(content)
+    index.add_mgoblog_content(content)
 
 
-def get_mgoblog_content_by_url(uow: unit_of_work.AbstractUnitOfWork, url: str) -> list[models.MgoBlogContent]:
+def get_mgoblog_content_by_url(index: index.AbstractIndex, url: str) -> list[models.MgoBlogContent]:
 
-    with uow:
-        retr_content = uow.index.get_mgoblog_content(url=url)
+    retr_content = index.get_mgoblog_content(url=url)
 
     return retr_content
 
-def get_similar_mgoblog_content(uow: unit_of_work.AbstractUnitOfWork, embeddings: list[list[float]], top_n_results: int) -> list[models.MgoBlogContent]:
+def get_similar_mgoblog_content(index: index.AbstractIndex, embeddings: list[list[float]], top_n_results: int) -> list[models.MgoBlogContent]:
 
-    with uow:
-        retr_content = uow.index.get_similar_mgoblog_content(embeddings=embeddings, top_n_results=top_n_results)
+    retr_content = index.get_similar_mgoblog_content(embeddings=embeddings, top_n_results=top_n_results)
 
     return retr_content
 
-def list_mgoblog_content(uow: unit_of_work.AbstractUnitOfWork) -> list[models.MgoBlogContent]:
-    with uow:
-        retr_content = uow.index.list_mgoblog_content()
+def list_mgoblog_content(index: index.AbstractIndex) -> list[models.MgoBlogContent]:
+    retr_content = index.list_mgoblog_content()
     
     return retr_content

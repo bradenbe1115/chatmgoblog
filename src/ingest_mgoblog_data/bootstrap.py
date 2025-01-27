@@ -1,5 +1,11 @@
-from ingest_mgoblog_data.service_layer import unit_of_work
+from ingest_mgoblog_data import config
+from ingest_mgoblog_data.common.repository import PyMongoMgoBlogContentRepository
+import pymongo
 
-def bootstrap(uow: unit_of_work.AbstractUnitOfWork = unit_of_work.PymongoUnitOfWork()):
+def mongo_db_client_factory() -> pymongo.MongoClient:
+    db_uri, port = config.get_mongo_db_info()
+    return pymongo.MongoClient(db_uri, port)
 
-    return {"uow": uow}
+def bootstrap():
+
+    return {"repo": PyMongoMgoBlogContentRepository(client=mongo_db_client_factory())}
