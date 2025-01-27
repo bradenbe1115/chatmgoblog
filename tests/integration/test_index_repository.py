@@ -1,9 +1,9 @@
-from content_index.common import index_repository, models
+from content_index.common import index, models
 import numpy as np
 import random
 
 def test_chromadb_index_repo(test_chromadb_client):
-    repo = index_repository.ChromaDBIndexRepository(test_chromadb_client, content_collection_name="test_collection")
+    repo = index.ChromaDBIndex(test_chromadb_client, content_collection_name="test_collection")
 
     data = [models.MgoBlogContent(id="1", url="/test", embedding=[0.0, 1.3], text="Test One"),
             models.MgoBlogContent(id="2", url="/test_two", embedding=[-9.2, 1.9], text="Test Two"),
@@ -25,7 +25,7 @@ def test_chromadb_get_similar_content(test_chromadb_client):
     for i in range(0,20):
         content.append(models.MgoBlogContent(id=str(i), url=f"/test/{i%5}", embedding=[np.random.normal(i*10,.1),np.random.normal(i*10,.1)], text=f"Test {i}"))
     
-    repo = index_repository.ChromaDBIndexRepository(test_chromadb_client, content_collection_name=f"test_collection_{int(random.random()*1000)}")
+    repo = index.ChromaDBIndex(test_chromadb_client, content_collection_name=f"test_collection_{int(random.random()*1000)}")
     repo.add_mgoblog_content(content)
 
     query_embeddings = [[0,0]]

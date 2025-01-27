@@ -1,9 +1,9 @@
-from content_index.service_layer import services, unit_of_work
-from content_index.common import models, index_repository
+from content_index.service_layer import services
+from content_index.common import index, models
 import random
 import string
 
-class FakeIndex(index_repository.AbstractIndexRepository):
+class FakeIndex(index.AbstractIndex):
 
     def __init__(self):
         super().__init__()
@@ -22,32 +22,28 @@ class FakeIndex(index_repository.AbstractIndexRepository):
     
     def _list_mgoblog_content(self):
         return list(self._index)
-    
-class FakeUnitOfWork(unit_of_work.AbstractUnitOfWork):
-    def __init__(self):
-        self.index = FakeIndex()
 
 def test_add_mgoblog_content():
-    uow = FakeUnitOfWork()
-    services.add_mgoblog_content(uow=uow, data=[{"id": "test_one", "url": "test_url/one", "embedding":[0.0], "text": "test one"}])
+    index = FakeIndex()
+    services.add_mgoblog_content(index=index, data=[{"id": "test_one", "url": "test_url/one", "embedding":[0.0], "text": "test one"}])
 
-    assert len(uow.index._index) 
+    assert len(index._index) 
 
 def test_get_mgoblog_content_by_url():
-    uow = FakeUnitOfWork()
-    uow.index._index.add(models.MgoBlogContent(id="test_one", embedding=[0.0], text="test one", url="test_url/one"))
-    results = services.get_mgoblog_content_by_url(uow=uow, url="test_url/one")
+    index = FakeIndex()
+    index._index.add(models.MgoBlogContent(id="test_one", embedding=[0.0], text="test one", url="test_url/one"))
+    results = services.get_mgoblog_content_by_url(index=index, url="test_url/one")
     assert len(results) == 1
 
 def test_get_similar_mgoblog_content():
 
-    uow = FakeUnitOfWork()
+    index = FakeIndex()
 
     for i in range(0, 10):
         random_string = ''.join(random.choices(string.ascii_letters + string.digits, k=4))
         content = models.MgoBlogContent(id=f"test_{random_string}", embedding=[random.random(), random.random()], text=random_string, url=f"url/{random_string}")
 
-        uow.index._index.add(content)
+        index._index.add(content)
     
-    results = services.get_similar_mgoblog_content(uow=uow, embeddings=[[0.0]], top_n_results=3)
+    results = services.get_similar_mgoblog_content(index=index, embeddings=[[0.0]], top_n_results=3)
     assert len(results) == 3

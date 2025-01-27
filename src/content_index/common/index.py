@@ -4,7 +4,7 @@ import chromadb
 from content_index.common import models
 
 
-class AbstractIndexRepository(abc.ABC):
+class AbstractIndex(abc.ABC):
 
     def add_mgoblog_content(self, content: list[models.MgoBlogContent]) -> None:
         """
@@ -54,7 +54,7 @@ class AbstractIndexRepository(abc.ABC):
         raise NotImplementedError
 
 
-class ChromaDBIndexRepository(AbstractIndexRepository):
+class ChromaDBIndex(AbstractIndex):
     field_include_list = ["embeddings", "documents", "metadatas"]
 
     def __init__(self, client: chromadb.HttpClient, content_collection_name: str):
