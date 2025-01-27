@@ -1,9 +1,8 @@
 from ingest_mgoblog_data.common.web_scraper import MGoBlogWebScraper
 from ingest_mgoblog_data.common import models
-from ingest_mgoblog_data.service_layer import unit_of_work
+from ingest_mgoblog_data.common import repository
 
-
-def scrape_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, start_url: str="https://www.mgoblog.com/additional-stories", iterations: int = 5):
+def scrape_mgoblog_data(repo: repository.AbstractMgoBlogContentRepository, start_url: str="https://www.mgoblog.com/additional-stories", iterations: int = 5):
     """
         Scrapes web pages from mgoblog to gather content
 
@@ -17,12 +16,11 @@ def scrape_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, start_url: str="ht
     results = ws.get_content(start_url=start_url,max_iteration=iterations)
     print(f"{len(results)} pages scraped starting at {start_url}")
 
-    with uow:
-        uow.content.add_raw_mgoblog_content(results)
+    repo.add_raw_mgoblog_content(results)
 
     return {"landed_urls":[x.url for x in results]}
 
-def process_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, event: dict):
+def process_mgoblog_data(repo: repository.AbstractMgoBlogContentRepository, event: dict):
     """
         Processes raw mgoblog content scraped from the website.
 
@@ -36,8 +34,7 @@ def process_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, event: dict):
     results = []
     landed_urls = event["landed_urls"]
 
-    with uow:
-        raw_data = uow.content.get_raw_mgoblog_content(urls=landed_urls)
+    raw_data = repo.get_raw_mgoblog_content(urls=landed_urls)
     
     for data in raw_data:
         processed_data = ws.extract_page_data(data.raw_html)
@@ -45,19 +42,17 @@ def process_mgoblog_data(uow: unit_of_work.AbstractUnitOfWork, event: dict):
         results.append(full_data)
 
     if len(results) > 0:
-        with uow:
-            uow.content.add_processed_mgoblog_content(results)
+        repo.add_processed_mgoblog_content(results)
         return {"processed_urls":[x.url for x in results]}
 
     return {"processed_urls":[]}
 
-def list_processed_mgoblog_content(uow: unit_of_work.AbstractUnitOfWork) -> list[models.MgoblogContentProcessedDataSchema]:
+def list_processed_mgoblog_content(repo: repository.AbstractMgoBlogContentRepository) -> list[models.MgoblogContentProcessedDataSchema]:
     """
         Lists all processed Mgoblog content stored in the repository
     """
 
-    with uow:
-        mgoblog_content = uow.content.list_mgoblog_content()
+    mgoblog_content = repo.list_mgoblog_content()
 
     if len(mgoblog_content) > 0:
         return mgoblog_content
