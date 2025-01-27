@@ -86,7 +86,7 @@ class HuggingFaceInferenceAPIEmbedder(AbstractEmbedder):
                 if response:
                     print(f"Failed to successfully retrieve embedded vector. Received status code: {response.status_code}; Error Message: {response.text}")
                 else:
-                    print("No response returned from API.")
+                    print("An error occurred when trying to access the Hugging Face API.")
         
         if len(results) > 0:
             return results

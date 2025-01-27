@@ -16,6 +16,18 @@ services:
     networks:
       - shared
 
+  incremental_mgoblog_embedding_pipeline:
+    build:
+      dockerfile: ./pipelines/incremental_mgoblog_embedding_pipeline/Dockerfile
+    ports:
+      - "9000:8080"
+    env_file:
+      - .env
+    profiles:
+      - incremental_mgoblog_embedding_pipeline
+    networks:
+      - shared
+
   all_tests:
     build:
       dockerfile: tests.Dockerfile

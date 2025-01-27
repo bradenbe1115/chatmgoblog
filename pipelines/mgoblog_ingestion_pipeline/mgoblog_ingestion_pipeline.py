@@ -11,11 +11,11 @@ def mgoblog_ingestion_pipeline():
 
     
     ingest_mgoblog_dependencies = ingest_mgoblog_bootstrap.bootstrap()
-
-    scrape_output = ingest_mgoblog_services.scrape_mgoblog_data(uow=ingest_mgoblog_dependencies["uow"], iterations=2)
+    """
+    scrape_output = ingest_mgoblog_services.scrape_mgoblog_data(uow=ingest_mgoblog_dependencies["uow"], iterations=30)
 
     ingest_mgoblog_services.process_mgoblog_data(uow=ingest_mgoblog_dependencies["uow"], event=scrape_output)
-
+    """
     mgoblog_content = ingest_mgoblog_services.list_processed_mgoblog_content(uow=ingest_mgoblog_dependencies["uow"])
 
     embed_dependencies = embed_bootstrap.RecursiveTextChunkerHuggingFaceMLE5Embedder()

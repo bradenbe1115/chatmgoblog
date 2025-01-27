@@ -41,7 +41,7 @@ class RecursiveCharacterTextChunker(AbstractChunker):
 
     def _chunk_text(self, data, **kwargs):
 
-        chunk_size = kwargs.get("chunk_size", 500)
+        chunk_size = kwargs.get("chunk_size", 300)
         chunk_overlap = kwargs.get("chunk_overlap",50)
 
 
