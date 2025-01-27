@@ -12,11 +12,11 @@ def mgoblog_ingestion_pipeline():
     
     ingest_mgoblog_dependencies = ingest_mgoblog_bootstrap.bootstrap()
     """
-    scrape_output = ingest_mgoblog_services.scrape_mgoblog_data(uow=ingest_mgoblog_dependencies["uow"], iterations=30)
+    scrape_output = ingest_mgoblog_services.scrape_mgoblog_data(uow=ingest_mgoblog_dependencies["repo"], iterations=30)
 
-    ingest_mgoblog_services.process_mgoblog_data(uow=ingest_mgoblog_dependencies["uow"], event=scrape_output)
+    ingest_mgoblog_services.process_mgoblog_data(uow=ingest_mgoblog_dependencies["repo"], event=scrape_output)
     """
-    mgoblog_content = ingest_mgoblog_services.list_processed_mgoblog_content(uow=ingest_mgoblog_dependencies["uow"])
+    mgoblog_content = ingest_mgoblog_services.list_processed_mgoblog_content(uow=ingest_mgoblog_dependencies["repo"])
 
     embed_dependencies = embed_bootstrap.RecursiveTextChunkerHuggingFaceMLE5Embedder()
     embedded_text = embed_content(chunker=embed_dependencies["chunker"], embedder=embed_dependencies["embedder"], text_data=[x.__dict__ for x in mgoblog_content], text_field_name="body")
