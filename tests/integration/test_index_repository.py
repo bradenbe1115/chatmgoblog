@@ -19,7 +19,7 @@ def test_chromadb_index_repo(test_chromadb_client):
     retr_test_two_url_results = repo.get_mgoblog_content(url="/test_two")
     assert len(retr_test_two_url_results) == 2
 
-    repo.delete_mgoblog_content(url="/test_two")
+    repo.delete_mgoblog_content(urls=["/test_two"])
     retr_data_that_should_be_deleted = repo.get_mgoblog_content(url="/test_two")
     assert len(retr_data_that_should_be_deleted) == 0
 

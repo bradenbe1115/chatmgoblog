@@ -20,8 +20,8 @@ class FakeIndex(index.AbstractIndex):
     def _get_similar_mgoblog_content(self, embeddings, top_n_results):
         return list(random.sample(self._index,min(top_n_results, len(self._index))))
     
-    def _delete_mgoblog_content(self, url):
-        self._index = {x for x in self._index if x.url == url}
+    def _delete_mgoblog_content(self, urls):
+        self._index = {x for x in self._index if x.url in urls}
     
     def _list_mgoblog_content(self):
         return list(self._index)

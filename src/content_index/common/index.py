@@ -15,16 +15,16 @@ class AbstractIndex(abc.ABC):
         """
         self._add_mgoblog_content(content=content)
 
-    def delete_mgoblog_content(self, url: str) -> None:
+    def delete_mgoblog_content(self, urls: list[str]) -> None:
         """
             Deletes all mgoblog content associated with a given URL.
 
             Function exits successfully if no associated content is found.
 
             Args:
-                url (str): URL for content that will be deleted
+                urls (list[str]): URLs for content that will be deleted
         """
-        self._delete_mgoblog_content(url=url)
+        self._delete_mgoblog_content(urls=urls)
     
     def get_mgoblog_content(self, url: str) -> list[models.MgoBlogContent]:
         """
@@ -53,7 +53,7 @@ class AbstractIndex(abc.ABC):
         raise NotImplementedError
     
     @abc.abstractmethod
-    def _delete_mgoblog_content(self, url: str) -> None:
+    def _delete_mgoblog_content(self, urls: list[str]) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -112,9 +112,9 @@ class ChromaDBIndex(AbstractIndex):
             documents=[x.text for x in content],
         )
 
-    def _delete_mgoblog_content(self, url):
+    def _delete_mgoblog_content(self, urls):
         
-        self.mgoblog_content_collection.delete(where={"url": url})
+        self.mgoblog_content_collection.delete(where={"url": {"$in": urls}})
 
     def _get_mgoblog_content(self, url: str) -> list[models.MgoBlogContent]:
 
