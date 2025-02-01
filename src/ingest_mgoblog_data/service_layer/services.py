@@ -2,23 +2,31 @@ from ingest_mgoblog_data.common.web_scraper import MGoBlogWebScraper
 from ingest_mgoblog_data.common import models
 from ingest_mgoblog_data.common import repository
 
-def scrape_mgoblog_data(repo: repository.AbstractMgoBlogContentRepository, start_url: str="https://www.mgoblog.com/additional-stories", iterations: int = 5):
+def scrape_mgoblog_data(web_scraper: MGoBlogWebScraper,repo: repository.AbstractMgoBlogContentRepository, start_url: str="https://www.mgoblog.com/additional-stories", iterations: int = 5, incremental=True):
     """
         Scrapes web pages from mgoblog to gather content
 
         Args:
             start_url (str): URL to start scraping from. Default is the additional content page on Mgoblog
             iterations (int): Number of pages to iterate through by hitting the next button on the blog
+            incremental (bool): If True, will only scrape content from site and add to the db if url is not already in db. Otherwise, all content scraped will be added to the db and overwrite existing data.
     """
 
-    ws = MGoBlogWebScraper()
+    stored_urls = []
 
-    results = ws.get_content(start_url=start_url,max_iteration=iterations)
+    if incremental:
+        print("Incremental strategy being used.")
+        stored_urls = [x.url for x in repo.list_mgoblog_content()]
+
+    results = web_scraper.get_content(start_url=start_url,max_iteration=iterations)
     print(f"{len(results)} pages scraped starting at {start_url}")
 
-    repo.add_raw_mgoblog_content(results)
+    results_to_add = [x for x in results if x.url not in stored_urls]
+    print(f"{len(results_to_add)} results being added to db.")
+    
+    repo.add_raw_mgoblog_content(results_to_add)
 
-    return {"landed_urls":[x.url for x in results]}
+    return {"landed_urls":[x.url for x in results_to_add]}
 
 def process_mgoblog_data(repo: repository.AbstractMgoBlogContentRepository, event: dict):
     """
