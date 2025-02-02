@@ -21,8 +21,8 @@ def find_content_not_embedded(processed_data, embedded_data):
 def mgoblog_ingestion_pipeline(iterations=1):
 
     print(f"Scraping content from Mgoblog. Number of iterations {iterations}")
-    scrape_output = ingest_mgoblog_services.scrape_mgoblog_data(repo=INGEST_MGOBLOG_BOOTSTRAP["repo"], iterations=iterations)
-    print(f"Scraped {len(scrape_output)} pages from MgoBlog.")
+    scrape_output = ingest_mgoblog_services.scrape_mgoblog_data(web_scraper=INGEST_MGOBLOG_BOOTSTRAP["web_scraper"],repo=INGEST_MGOBLOG_BOOTSTRAP["repo"], iterations=iterations, start_url="https://mgoblog.com/")
+    print(f"Scraped {len(scrape_output['landed_urls'])} pages from MgoBlog.")
 
     print("Processing pages.")
     ingest_mgoblog_services.process_mgoblog_data(repo=INGEST_MGOBLOG_BOOTSTRAP["repo"], event=scrape_output)
@@ -33,17 +33,20 @@ def mgoblog_ingestion_pipeline(iterations=1):
     content_to_embed = find_content_not_embedded(mgoblog_content, embedded_content)
     print(f"{len(content_to_embed)} pages of content to embed.")
 
-    embedded_text = embed_content(chunker=EMBED_BOOTSTRAP["chunker"], embedder=EMBED_BOOTSTRAP["embedder"], text_data=[x.__dict__ for x in content_to_embed], text_field_name="body")
+    if len(content_to_embed) > 0:
+        embedded_text = embed_content(chunker=EMBED_BOOTSTRAP["chunker"], embedder=EMBED_BOOTSTRAP["embedder"], text_data=[x.__dict__ for x in content_to_embed], text_field_name="body")
 
-    # Formatting data into expected content index schema
-    content_to_index = []
-    for i in range(0,len(embedded_text)):
-        item = embedded_text[i]
-        url = item["url"]
-        content_to_index.append({"id": f"{i}:{url}","url": url, "embedding": item['embedded'], "text": item['body']})
+        # Formatting data into expected content index schema
+        content_to_index = []
+        for i in range(0,len(embedded_text)):
+            item = embedded_text[i]
+            url = item["url"]
+            content_to_index.append({"id": f"{i}:{url}","url": url, "embedding": item['embedded'], "text": item['body']})
 
-    print(f"Uploading {len(content_to_index)} indexes into content index.")
-    content_index_services.add_mgoblog_content(index=CONTENT_INDEX_BOOTSTRAP["index"], data=content_to_index)
+        print(f"Uploading {len(content_to_index)} indexes into content index.")
+        content_index_services.add_mgoblog_content(index=CONTENT_INDEX_BOOTSTRAP["index"], data=content_to_index)
+    
+    print("No new content to embed. Exiting..")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the Mgoblog ingestion pipeline.")

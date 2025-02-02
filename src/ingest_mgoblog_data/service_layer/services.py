@@ -22,9 +22,11 @@ def scrape_mgoblog_data(web_scraper: MGoBlogWebScraper,repo: repository.Abstract
     print(f"{len(results)} pages scraped starting at {start_url}")
 
     results_to_add = [x for x in results if x.url not in stored_urls]
-    print(f"{len(results_to_add)} results being added to db.")
+   
     
-    repo.add_raw_mgoblog_content(results_to_add)
+    if len(results_to_add) > 0: 
+        print(f"{len(results_to_add)} results being added to db.")
+        repo.add_raw_mgoblog_content(results_to_add)
 
     return {"landed_urls":[x.url for x in results_to_add]}
 
