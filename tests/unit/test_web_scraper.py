@@ -42,6 +42,24 @@ def test_get_content_links():
     assert content_links[0] == "right"
     assert content_links[1] == "right"
 
+def test_get_content_links_home_page():
+    ws = MGoBlogWebScraper()
+
+    test_html= """
+                <html>
+                    <body>
+                        <div class='views-row'>
+                            <div class='title-wrapper'>
+                                <a href="right"/>
+                            </div>
+                        </div>
+                    </body>
+                </html>
+                """
+    
+    content_links = ws.get_content_links(page_content=test_html)
+    assert len(content_links) == 1
+
 def test_extract_page_data():
 
     ws = MGoBlogWebScraper()
